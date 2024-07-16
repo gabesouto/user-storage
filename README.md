@@ -11,7 +11,17 @@
 
 ## steps
 - [x] Create a new nestjs project
-- [] Add prisma ORM
+- [x] Add prisma ORM
+- [x] Add Postgres
+- [x] Add Docker-compose
+- [ ] define folder structure 
+
+
+
+
+
+
+
 
 
 
