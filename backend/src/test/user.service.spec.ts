@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from '../modules/user/controller/user.controller';
-import { UserService } from '../modules/user/service/user.service'
+import { UserService } from '../modules/user/service/user.service';
 
-describe('AppController', () => {
+describe('UserService tests', () => {
   let userService: UserService;
 
   beforeEach(async () => {
@@ -15,19 +15,25 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    const newUser: User = {
-      name: "test",
-      password: "test",
-      email: "test@test.com",
-      role: "admin",
-      age: 26
+    const newUser = {
+      name: "John Doe",
+      password: "password123",
+      email: "john.doe@example.com",
+      role: "user",
+      age: 30
+    };
 
-    } 
+    it('should successfully register a new user and return the new user data', () => {
+   
+      const response = userService.post(newUser);
 
-    const response = newUser
-
-    it('should successfully register a new user and return user data', () => {
-      expect(userService.post(newUser)).toBe(response);
+      expect(response).toEqual({
+        data: expect.objectContaining({
+          ...newUser,
+          id: expect.any(String),
+          createdAt: expect.any(Date)
+        })
+      });
     });
   });
 });
