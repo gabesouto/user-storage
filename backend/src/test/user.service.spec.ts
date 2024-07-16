@@ -29,11 +29,18 @@ describe('UserService tests', () => {
 
       expect(response).toEqual({
         data: expect.objectContaining({
-          ...newUser,
+          name: newUser.name,
+          email: newUser.email,
+          role: newUser.role,
+          age: newUser.age,
           id: expect.any(String),
           createdAt: expect.any(Date)
         })
       });
+
+
+      expect(response.data).not.toHaveProperty('password');
+      });
     });
   });
-});
+
