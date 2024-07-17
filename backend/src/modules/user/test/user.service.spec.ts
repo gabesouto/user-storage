@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { randomUUID } from 'crypto'
-import { PrismaService } from '../database/prisma.service'
-import { UserService } from '../modules/user/service/user.service'
-import { ExcludeService } from '../modules/user/helpers/exclude.service'
+import { PrismaService } from '../../database/prisma.service'
+import { UserService } from '../service/user.service'
+import { ExcludeService } from '../helpers/exclude.service'
 import { NotFoundException } from '@nestjs/common'
 
-describe('PostsService', () => {
+describe('UserService', () => {
   let service: UserService
   let prisma: PrismaService
 
