@@ -56,7 +56,6 @@ describe('PostsService', () => {
       }
       
       const response = await service.post(newUser);
-
       expect(response).toStrictEqual({data: mockUser})
       expect(prisma.user.create).toHaveBeenCalledTimes(1);
 
