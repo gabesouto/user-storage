@@ -21,13 +21,14 @@ datasource db {
 // data de cadastro
 
 model User {
-  id      String   @id @default(uuid())
-  email   String   @unique
-  name    String
-  age     Int
-  role    String
-  createdAt   DateTime  @map("created_at")
- 
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  fullName  String    @map("full_name")
+  age       Int
+  role      String
+  createdAt DateTime  @map("created_at")
+
   @@map("users")
 }
 
