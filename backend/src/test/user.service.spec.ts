@@ -27,6 +27,33 @@ describe('PostsService', () => {
     createdAt: mockUser.createdAt,
   }
 
+  const mockUsers = [
+    {
+      id: randomUUID(),
+      fullName: '1mock user',
+      email: 'moc1@gmail.com',
+      age: 24,
+      role: 'admin',
+      createdAt: Date.now(),
+    },
+    {
+      id: randomUUID(),
+      fullName: '2mock user',
+      email: 'moc2@gmail.com',
+      age: 24,
+      role: 'admin',
+      createdAt: Date.now(),
+    },
+    {
+      id: randomUUID(),
+      fullName: '3mock user',
+      email: 'mock3@gmail.com',
+      age: 24,
+      role: 'admin',
+      createdAt: Date.now(),
+    },
+  ]
+
   const prismaMock = {
     user: {
       create: jest.fn().mockReturnValue(mockUser),
@@ -145,6 +172,14 @@ describe('PostsService', () => {
       await expect(service.update(randomUUID(), mockUser)).rejects.toThrow(
         new NotFoundException('user not found'),
       )
+    })
+  })
+
+  describe('findAll', () => {
+    it(`should return an array of users`, async () => {
+      const response = await service.findAll()
+
+      expect(response).toEqual(mockUsers)
     })
   })
 })
