@@ -69,4 +69,16 @@ export class UserService {
       throw new NotFoundException('user not found')
     }
   }
+
+  async findAll(page: number, limit: number) {
+    const startIndex = (page - 1) * limit
+    const endIndex = startIndex + limit
+
+    const results = await this.prisma.user.findMany({
+      skip: startIndex,
+      take: endIndex,
+    })
+
+    return results
+  }
 }
