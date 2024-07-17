@@ -8,6 +8,8 @@ import {
   Param,
   ParseUUIDPipe,
   Put,
+  Delete,
+  HttpCode,
 } from '@nestjs/common'
 import { UserService } from '../service/user.service'
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
@@ -33,5 +35,11 @@ export class UserController {
     @Body() updateUser: UpdateUserDto,
   ) {
     return this.userService.update(id, updateUser)
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  async delete(@Param('id', ParseUUIDPipe) id: string) {
+    return this.userService.delete(id)
   }
 }
