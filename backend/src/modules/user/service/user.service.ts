@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
 import { PrismaService } from '../../../database/prisma.service'
 import { ExcludeService } from '../helpers/exclude.service'
+import { IUserResponse } from '../interface/userResponse.interface'
 
 @Injectable()
 export class UserService {
@@ -10,7 +11,13 @@ export class UserService {
     private readonly excludeService: ExcludeService,
   ) {}
 
-  async create({ fullName, role, age, password, email }: CreateUserDto) {
+  async create({
+    fullName,
+    role,
+    age,
+    password,
+    email,
+  }: CreateUserDto): Promise<IUserResponse> {
     const newUser = await this.prisma.user.create({
       data: {
         fullName,
@@ -31,7 +38,7 @@ export class UserService {
     }
   }
 
-  async findById(id: string) {
+  async findById(id: string): Promise<IUserResponse> {
     const user = await this.prisma.user.findUnique({
       where: { id },
     })
@@ -45,7 +52,7 @@ export class UserService {
     return { data: userWithoutPassword }
   }
 
-  async update(id: string, updateUser: UpdateUserDto) {
+  async update(id: string, updateUser: UpdateUserDto): Promise<IUserResponse> {
     try {
       const userUpdated = await this.prisma.user.update({
         where: { id },
@@ -62,7 +69,7 @@ export class UserService {
     }
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<void> {
     try {
       await this.prisma.user.delete({ where: { id } })
     } catch (error) {
@@ -70,15 +77,22 @@ export class UserService {
     }
   }
 
-  async findAll(page: number, limit: number) {
+  async findAll(page: number, limit: number): Promise<IUserResponse> {
     const startIndex = (page - 1) * limit
     const endIndex = startIndex + limit
 
-    const results = await this.prisma.user.findMany({
+    const users = await this.prisma.user.findMany({
       skip: startIndex,
       take: endIndex,
     })
 
-    return results
+    if (!users) {
+      throw new NotFoundException('No users found for the given page and limit')
+    }
+    const usersWithoutPasswords = users.map((user) =>
+      this.excludeService.exclude(user, ['password']),
+    )
+
+    return { data: usersWithoutPasswords }
   }
 }

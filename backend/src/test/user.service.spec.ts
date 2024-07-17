@@ -179,7 +179,7 @@ describe('PostsService', () => {
     it(`should return an array of users`, async () => {
       const response = await service.findAll(1, 5)
 
-      expect(response).toEqual(mockUsers)
+      expect(response).toEqual({ data: mockUsers })
     })
 
     it(`should throw an error if there is no users for page selected`, async () => {
