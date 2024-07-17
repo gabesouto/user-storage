@@ -1,8 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
-import { PrismaService } from '../../../database/prisma.service'
+import { PrismaService } from '../../database/prisma.service'
 import { ExcludeService } from '../helpers/exclude.service'
 import { IUserResponse } from '../interface/userResponse.interface'
+import { IUser } from '../interface/user.interface'
+import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class UserService {
@@ -18,10 +20,11 @@ export class UserService {
     password,
     email,
   }: CreateUserDto): Promise<IUserResponse> {
+    const hashPassword = await bcrypt.hash(password, 10)
     const newUser = await this.prisma.user.create({
       data: {
         fullName,
-        password,
+        password: hashPassword,
         role,
         age,
         email,
@@ -94,5 +97,9 @@ export class UserService {
     )
 
     return { data: usersWithoutPasswords }
+  }
+
+  async findOne(email: string): Promise<IUser> {
+    return await this.prisma.user.findUnique({ where: { email } })
   }
 }
