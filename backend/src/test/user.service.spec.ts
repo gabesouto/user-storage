@@ -57,7 +57,7 @@ describe('PostsService', () => {
   const prismaMock = {
     user: {
       create: jest.fn().mockReturnValue(mockUser),
-      // findMany: jest.fn().mockResolvedValue(fakePosts),
+      findMany: jest.fn().mockResolvedValue(mockUsers),
       findUnique: jest.fn().mockResolvedValue(mockUser),
       update: jest.fn().mockResolvedValue(mockUpdatedUser),
       delete: jest.fn(), // O método delete não retorna nada
@@ -177,7 +177,7 @@ describe('PostsService', () => {
 
   describe('findAll', () => {
     it(`should return an array of users`, async () => {
-      const response = await service.findAll()
+      const response = await service.findAll(1, 5)
 
       expect(response).toEqual(mockUsers)
     })
