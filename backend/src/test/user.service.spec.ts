@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { randomUUID } from 'crypto';
 import { PrismaService } from "../database/prisma.service"
 import { UserService } from '../modules/user/service/user.service'
+import { ExcludeService } from '../modules/user/helpers/exclude.service'
+import { NotFoundException } from '@nestjs/common';
     
 
 describe('PostsService', () => {
@@ -21,7 +23,7 @@ describe('PostsService', () => {
     user: {
       create: jest.fn().mockReturnValue(mockUser),
       // findMany: jest.fn().mockResolvedValue(fakePosts),
-      // findUnique: jest.fn().mockResolvedValue(fakePosts[0]),
+      findUnique: jest.fn().mockResolvedValue(mockUser),
       // update: jest.fn().mockResolvedValue(fakePosts[0]),
       // delete: jest.fn(), // O método delete não retorna nada
     },
@@ -31,6 +33,7 @@ describe('PostsService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserService,
+        ExcludeService,
         { provide: PrismaService, useValue: prismaMock },
       ],
     }).compile();
@@ -82,25 +85,20 @@ describe('PostsService', () => {
 
   describe('findOne', () => {
     it(`should return a single user`, async () => {
-      const response = await service.findOne(1);
+      const response = await service.findById(mockUser.id);
 
-      expect(response).toEqual(mockUser);
+      expect(response).toEqual({data : mockUser});
       expect(prisma.user.findUnique).toHaveBeenCalledTimes(1);
       expect(prisma.user.findUnique).toHaveBeenCalledWith({
         where: { id: mockUser.id },
       });
     });
 
-    it(`should return nothing when user is not found`, async () => {
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(undefined);
-
-      const response = await service.findOne(99);
-
-      expect(response).toBeUndefined();
-      expect(prisma.user.findUnique).toHaveBeenCalledTimes(1);
-      expect(prisma.user.findUnique).toHaveBeenCalledWith({
-        where: { id: 99 },
-      });
+    it('should throw a NotFoundException when user is not found', async () => {
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
+    
+      await expect(service.findById("99")).rejects.toThrow(new NotFoundException('user not found'));
     });
+    
   });
 });
