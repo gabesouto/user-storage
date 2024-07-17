@@ -181,5 +181,12 @@ describe('PostsService', () => {
 
       expect(response).toEqual(mockUsers)
     })
+
+    it(`should throw an error if there is no users for page selected`, async () => {
+      jest.spyOn(prisma.user, 'findMany').mockResolvedValue(null)
+      await expect(service.findAll(100, 100)).rejects.toThrow(
+        new NotFoundException('No users found for the given page and limit'),
+      )
+    })
   })
 })
