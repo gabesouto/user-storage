@@ -1,14 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateUserDto } from '../dto/user.dto';
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
 import { PrismaService } from '../../../database/prisma.service'
-import { ExcludeService } from '../helpers/exclude.service';
+import { ExcludeService } from '../helpers/exclude.service'
 
 @Injectable()
 export class UserService {
-  constructor
-  (
+  constructor(
     private readonly prisma: PrismaService,
-    private readonly excludeService: ExcludeService
+    private readonly excludeService: ExcludeService,
   ) {}
 
   async create({ fullName, role, age, password, email }: CreateUserDto) {
@@ -21,31 +20,45 @@ export class UserService {
         email,
         createdAt: new Date(),
       },
-    });
+    })
+
+    const userWithoutPassword = this.excludeService.exclude(newUser, [
+      'password',
+    ])
 
     return {
-      data: {
-        id: newUser.id,
-        fullName: newUser.fullName,
-        email: newUser.email,
-        role: newUser.role,
-        age: newUser.age,
-        createdAt: newUser.createdAt,
-      },
-    };
+      data: userWithoutPassword,
+    }
   }
 
   async findById(id: string) {
     const user = await this.prisma.user.findUnique({
       where: { id },
-    });
+    })
 
-    if(!user){    
+    if (!user) {
       throw new NotFoundException('user not found')
     }
 
-    const userWithoutPassword =  this.excludeService.exclude(user, ['password']);
+    const userWithoutPassword = this.excludeService.exclude(user, ['password'])
 
-    return {data: userWithoutPassword}
+    return { data: userWithoutPassword }
+  }
+
+  async update(id: string, updateUser: UpdateUserDto) {
+    try {
+      const userUpdated = await this.prisma.user.update({
+        where: { id },
+        data: updateUser,
+      })
+
+      const userWithoutPassword = this.excludeService.exclude(userUpdated, [
+        'password',
+      ])
+
+      return { data: userWithoutPassword }
+    } catch (error) {
+      throw new NotFoundException('user not found')
+    }
   }
 }

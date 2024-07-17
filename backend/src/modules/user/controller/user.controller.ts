@@ -1,21 +1,37 @@
-import { Controller, Get, Post, Body, UsePipes, ValidationPipe, Param, ParseUUIDPipe } from '@nestjs/common';
-import { UserService } from '../service/user.service';
-import { CreateUserDto } from '../dto/user.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UsePipes,
+  ValidationPipe,
+  Param,
+  ParseUUIDPipe,
+  Put,
+} from '@nestjs/common'
+import { UserService } from '../service/user.service'
+import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
 
 @Controller('users')
 @UsePipes(ValidationPipe)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post() 
+  @Post()
   async create(@Body() user: CreateUserDto) {
-    return await this.userService.create(user); 
+    return await this.userService.create(user)
   }
 
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return await this.userService.findById(id)
-    
   }
-  
+
+  @Put(':id')
+  async update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateUser: UpdateUserDto,
+  ) {
+    return this.userService.update(id, updateUser)
+  }
 }
