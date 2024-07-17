@@ -2,7 +2,8 @@
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "full_name" TEXT NOT NULL,
     "age" INTEGER NOT NULL,
     "role" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL,
