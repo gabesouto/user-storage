@@ -54,11 +54,53 @@ describe('PostsService', () => {
         age: 24,
         role: "admin",
       }
-      
-      const response = await service.post(newUser);
+
+      const response = await service.create(newUser);
       expect(response).toStrictEqual({data: mockUser})
       expect(prisma.user.create).toHaveBeenCalledTimes(1);
 
+    });
+  });
+
+  describe('create', () => {
+    it(`should create a new user`, async () => {
+
+      let newUser = {
+        fullName: "mock user",
+        email: "mock@gmail.com",
+        password: "12345678",
+        age: 24,
+        role: "admin",
+      }
+      
+      const response = await service.create(newUser);
+      expect(response).toStrictEqual({data: mockUser})
+      expect(prisma.user.create).toHaveBeenCalledTimes(1);
+
+    });
+  });
+
+  describe('findOne', () => {
+    it(`should return a single user`, async () => {
+      const response = await service.findOne(1);
+
+      expect(response).toEqual(mockUser);
+      expect(prisma.user.findUnique).toHaveBeenCalledTimes(1);
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({
+        where: { id: mockUser.id },
+      });
+    });
+
+    it(`should return nothing when user is not found`, async () => {
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(undefined);
+
+      const response = await service.findOne(99);
+
+      expect(response).toBeUndefined();
+      expect(prisma.user.findUnique).toHaveBeenCalledTimes(1);
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({
+        where: { id: 99 },
+      });
     });
   });
 });
