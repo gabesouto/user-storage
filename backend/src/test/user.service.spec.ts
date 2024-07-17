@@ -33,7 +33,7 @@ describe('PostsService', () => {
       // findMany: jest.fn().mockResolvedValue(fakePosts),
       findUnique: jest.fn().mockResolvedValue(mockUser),
       update: jest.fn().mockResolvedValue(mockUpdatedUser),
-      // delete: jest.fn(), // O método delete não retorna nada
+      delete: jest.fn(), // O método delete não retorna nada
     },
   }
 
@@ -107,7 +107,7 @@ describe('PostsService', () => {
   })
 
   describe('updateOne', () => {
-    it(`should update a post`, async () => {
+    it(`should update a user`, async () => {
       const mockToUpdateUser = {
         fullName: 'updated mock user',
         email: 'mock@gmail.com',
@@ -127,6 +127,20 @@ describe('PostsService', () => {
 
     it(`should return NotFoundException when no post is found`, async () => {
       jest.spyOn(prisma.user, 'update').mockResolvedValue(null)
+
+      await expect(service.update(randomUUID(), mockUser)).rejects.toThrow(
+        new NotFoundException('user not found'),
+      )
+    })
+  })
+
+  describe('deleteOne', () => {
+    it(`should delete a user`, async () => {
+      expect(await service.delete(mockUser.id)).toBeUndefined()
+    })
+
+    it(`should return NotFoundException when no user is found`, async () => {
+      jest.spyOn(prisma.user, 'delete').mockResolvedValue(null)
 
       await expect(service.update(randomUUID(), mockUser)).rejects.toThrow(
         new NotFoundException('user not found'),
