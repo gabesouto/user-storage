@@ -18,13 +18,14 @@ import {
 import { UserService } from '../service/user.service'
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
 import { AuthGuard } from 'src/modules/auth/auth.guard'
+import { RoleGuard } from 'src/modules/auth/role.guard'
 
 @Controller('users')
 @UsePipes(ValidationPipe)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post('signup')
+  @Post('create')
   async create(@Body() user: CreateUserDto) {
     return await this.userService.create(user)
   }
@@ -38,9 +39,15 @@ export class UserController {
     return this.userService.findAll(page, limit)
   }
 
-  @Get('/find/:id')
+  @UseGuards(AuthGuard, RoleGuard)
+  @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return await this.userService.findById(id)
+    return await this.userService.findOne(id)
+  }
+
+  @Get('/find')
+  async findByEmail(@Body() email: string) {
+    return await this.userService.findByEmail(email)
   }
 
   @UseGuards(AuthGuard)
