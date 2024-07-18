@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { randomUUID } from 'crypto'
 import { PrismaService } from '../../database/prisma.service'
 import { UserService } from '../service/user.service'
-import { ExcludeService } from '../helpers/exclude.service'
+import { ExcludeService } from '../../helpers/exclude.service'
 import { NotFoundException } from '@nestjs/common'
 
 describe('UserService', () => {
@@ -115,19 +115,19 @@ describe('UserService', () => {
 
   describe('findOne', () => {
     it(`should return a single user`, async () => {
-      const response = await service.findById(mockUser.id)
+      const response = await service.findByEmail(mockUser.email)
 
       expect(response).toEqual({ data: mockUser })
       expect(prisma.user.findUnique).toHaveBeenCalledTimes(1)
       expect(prisma.user.findUnique).toHaveBeenCalledWith({
-        where: { id: mockUser.id },
+        where: { id: mockUser.email },
       })
     })
 
     it('should throw a NotFoundException when user is not found', async () => {
       jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null)
 
-      await expect(service.findById('99')).rejects.toThrow(
+      await expect(service.findByEmail('99')).rejects.toThrow(
         new NotFoundException('user not found'),
       )
     })
