@@ -1,20 +1,19 @@
-import { Test, TestingModule } from '@nestjs/testing'
-import { AuthService } from '../auth.service'
-import { JwtModule, JwtService } from '@nestjs/jwt'
+import { ExcludeService } from '@helpers/exclude.service'
+import { HelpersModule } from '@helpers/helpers.module'
 import {
   forwardRef,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common'
-import { UsersModule } from '../../user/user.module'
-import { AuthController } from '../auth.controller'
-import { UserService } from '../../user/service/user.service'
+import { JwtService, JwtModule } from '@nestjs/jwt'
+import { TestingModule, Test } from '@nestjs/testing'
+import { IUserResponse } from '@user/interface/userResponse.interface'
+import { UserService } from '@user/service/user.service'
+import { UsersModule } from '@user/user.module'
 import * as bcrypt from 'bcrypt'
 import { randomUUID } from 'crypto'
-import { afterEach } from 'node:test'
-import { ExcludeService } from '../../helpers/exclude.service'
-import { HelpersModule } from '../../helpers/helpers.module'
-import { IUserResponse } from 'src/modules/user/interface/userResponse.interface'
+import { AuthController } from '../auth.controller'
+import { AuthService } from '../auth.service'
 
 describe('AuthService', () => {
   let authService: AuthService
