@@ -37,7 +37,7 @@ export class UserService {
     ])
 
     return {
-      data: userWithoutPassword,
+      data: userWithoutPassword as IUserResponse,
     }
   }
 
@@ -67,7 +67,7 @@ export class UserService {
         'password',
       ])
 
-      return { data: userWithoutPassword }
+      return { data: userWithoutPassword as IUserResponse }
     } catch (error) {
       throw new NotFoundException('User not found')
     }
