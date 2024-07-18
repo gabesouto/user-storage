@@ -115,20 +115,20 @@ describe('UserService', () => {
 
   describe('findOne', () => {
     it(`should return a single user`, async () => {
-      const response = await service.findByEmail(mockUser.email)
+      const response = await service.findOne(mockUser.id)
 
-      expect(response).toEqual({ data: mockUser })
+      expect(response).toEqual(mockUser)
       expect(prisma.user.findUnique).toHaveBeenCalledTimes(1)
       expect(prisma.user.findUnique).toHaveBeenCalledWith({
-        where: { id: mockUser.email },
+        where: { id: mockUser.id },
       })
     })
 
     it('should throw a NotFoundException when user is not found', async () => {
       jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null)
 
-      await expect(service.findByEmail('99')).rejects.toThrow(
-        new NotFoundException('user not found'),
+      await expect(service.findOne('99')).rejects.toThrow(
+        new NotFoundException('User not found'),
       )
     })
   })
@@ -152,11 +152,11 @@ describe('UserService', () => {
       })
     })
 
-    it(`should return NotFoundException when no post is found`, async () => {
+    it(`should return NotFoundException when no user is found`, async () => {
       jest.spyOn(prisma.user, 'update').mockResolvedValue(null)
 
       await expect(service.update(randomUUID(), mockUser)).rejects.toThrow(
-        new NotFoundException('user not found'),
+        new NotFoundException('User not found'),
       )
     })
   })
@@ -170,7 +170,7 @@ describe('UserService', () => {
       jest.spyOn(prisma.user, 'delete').mockResolvedValue(null)
 
       await expect(service.update(randomUUID(), mockUser)).rejects.toThrow(
-        new NotFoundException('user not found'),
+        new NotFoundException('User not found'),
       )
     })
   })
@@ -190,3 +190,5 @@ describe('UserService', () => {
     })
   })
 })
+
+// TODO: AJUTAR PADRAO DE RESPOSTAS DAS EXCEPTIONS, ORGANIZAR COMMITS
