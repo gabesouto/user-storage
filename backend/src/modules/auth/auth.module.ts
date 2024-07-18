@@ -1,9 +1,9 @@
+import { HelpersModule } from '@helpers/helpers.module'
 import { forwardRef, Module } from '@nestjs/common'
-import { UsersModule } from '../user/user.module'
-import { AuthService } from './auth.service'
 import { JwtModule } from '@nestjs/jwt'
+import { UsersModule } from '@user/user.module'
 import { AuthController } from './auth.controller'
-import { HelpersModule } from '../helpers/helpers.module'
+import { AuthService } from './auth.service'
 
 @Module({
   imports: [

@@ -1,9 +1,10 @@
+import { PrismaService } from '@database//prisma.service'
+import { ExcludeService } from '@helpers/exclude.service'
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
-import { PrismaService } from '../../database/prisma.service'
-import { ExcludeService } from '../../helpers/exclude.service'
-import { IUserResponse } from '../interface/userResponse.interface'
-import { IUser } from '../interface/user.interface'
+import { CreateUserDto, UpdateUserDto } from '@user/dto/user.dto'
+import { IUser } from '@user/interface/user.interface'
+import { IUserResponse } from '@user/interface/userResponse.interface'
+
 import * as bcrypt from 'bcrypt'
 
 @Injectable()

@@ -1,24 +1,24 @@
 import {
   Controller,
-  Get,
-  Post,
-  Body,
   UsePipes,
   ValidationPipe,
+  Post,
+  Body,
+  Get,
+  UseGuards,
+  Query,
+  DefaultValuePipe,
+  ParseIntPipe,
   Param,
   ParseUUIDPipe,
   Put,
   Delete,
   HttpCode,
-  ParseIntPipe,
-  DefaultValuePipe,
-  Query,
-  UseGuards,
 } from '@nestjs/common'
-import { UserService } from '../service/user.service'
-import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
-import { AuthGuard } from '../../auth/guards/auth.guard'
-import { RoleGuard } from '../../auth/guards/role.guard'
+import { CreateUserDto, UpdateUserDto } from '@user/dto/user.dto'
+import { UserService } from '@user/service/user.service'
+import { AuthGuard } from 'modules/auth/guards/auth.guard'
+import { RoleGuard } from 'modules/auth/guards/role.guard'
 
 @Controller('users')
 @UsePipes(ValidationPipe)

@@ -4,11 +4,12 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common'
-import { UserService } from '../user/service/user.service'
+
 import * as bcrypt from 'bcrypt'
+import { ExcludeService } from '@helpers/exclude.service'
 import { JwtService } from '@nestjs/jwt'
-import { ExcludeService } from '../helpers/exclude.service'
-import { IUser } from '../user/interface/user.interface'
+import { IUser } from '@user/interface/user.interface'
+import { UserService } from '@user/service/user.service'
 
 @Injectable()
 export class AuthService {
