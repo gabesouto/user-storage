@@ -17,8 +17,8 @@ import {
 } from '@nestjs/common'
 import { UserService } from '../service/user.service'
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
-import { AuthGuard } from 'src/modules/auth/guards/auth.guard'
-import { RoleGuard } from 'src/modules/auth/guards/role.guard'
+import { AuthGuard } from '../../auth/guards/auth.guard'
+import { RoleGuard } from '../../auth/guards/role.guard'
 
 @Controller('users')
 @UsePipes(ValidationPipe)
@@ -31,6 +31,7 @@ export class UserController {
   }
 
   @Get()
+  @UseGuards(AuthGuard)
   async findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe)
     page: number,
