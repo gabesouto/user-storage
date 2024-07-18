@@ -1,5 +1,11 @@
-import { IUser } from './user.interface'
-
+type UserWithoutPassword = {
+  fullName: string
+  id: string
+  role: string
+  email: string
+  age: number
+  createdAt: Date
+}
 export interface IUserResponse {
-  data: Partial<IUser> | Partial<IUser>[]
+  data: UserWithoutPassword | UserWithoutPassword[]
 }
