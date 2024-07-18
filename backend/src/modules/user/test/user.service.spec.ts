@@ -1,9 +1,9 @@
-import { PrismaService } from '@database//prisma.service'
-import { ExcludeService } from '@helpers/exclude.service'
 import { NotFoundException } from '@nestjs/common'
 import { TestingModule, Test } from '@nestjs/testing'
-import { UserService } from '@user/service/user.service'
 import { randomUUID } from 'crypto'
+import { ExcludeService } from '@helpers/exclude.service'
+import { UserService } from '@user/service/user.service'
+import { PrismaService } from '@database/prisma.service'
 
 describe('UserService', () => {
   let service: UserService

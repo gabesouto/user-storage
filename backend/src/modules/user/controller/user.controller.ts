@@ -1,3 +1,5 @@
+import { AuthGuard } from '@auth/guards/auth.guard'
+import { RoleGuard } from '@auth/guards/role.guard'
 import {
   Controller,
   UsePipes,
@@ -17,8 +19,6 @@ import {
 } from '@nestjs/common'
 import { CreateUserDto, UpdateUserDto } from '@user/dto/user.dto'
 import { UserService } from '@user/service/user.service'
-import { AuthGuard } from 'modules/auth/guards/auth.guard'
-import { RoleGuard } from 'modules/auth/guards/role.guard'
 
 @Controller('users')
 @UsePipes(ValidationPipe)

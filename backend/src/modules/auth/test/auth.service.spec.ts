@@ -1,5 +1,4 @@
-import { ExcludeService } from '@helpers/exclude.service'
-import { HelpersModule } from '@helpers/helpers.module'
+import { HelpersModule } from '../../helpers/helpers.module'
 import {
   forwardRef,
   NotFoundException,
@@ -14,6 +13,7 @@ import * as bcrypt from 'bcrypt'
 import { randomUUID } from 'crypto'
 import { AuthController } from '../auth.controller'
 import { AuthService } from '../auth.service'
+import { ExcludeService } from '@helpers/exclude.service'
 
 describe('AuthService', () => {
   let authService: AuthService

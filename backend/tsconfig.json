@@ -9,7 +9,7 @@
     "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist/src",
-    "baseUrl": "./src",
+    "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
@@ -18,11 +18,11 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@user/*": ["modules/user/*"],
-      "@database/*": ["modules/database*"],
-      "@helpers/*": ["modules/helpers/*"],
-      "@auth/*": ["module/auth/*"],
-      "@utils/*": ["utils/*"]
+      "@user/*": ["src/modules/user/*"],
+      "@database/*": ["src/modules/database/*"],
+      "@helpers/*": ["src/modules/helpers/*"],
+      "@auth/*": ["src/modules/auth/*"],
+
     },
   }
 }
