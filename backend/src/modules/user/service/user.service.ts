@@ -19,7 +19,7 @@ export class UserService {
     age,
     password,
     email,
-  }: CreateUserDto): Promise<IUserResponse> {
+  }: CreateUserDto): Promise<{ data: IUserResponse }> {
     const hashPassword = await bcrypt.hash(password, 10)
     const newUser = await this.prisma.user.create({
       data: {
@@ -41,19 +41,22 @@ export class UserService {
     }
   }
 
-  async findByEmail(email: string): Promise<IUserResponse> {
+  async findByEmail(email: string): Promise<{ data: IUserResponse }> {
     const user = await this.prisma.user.findUnique({
       where: { email },
     })
 
     if (!user) {
-      throw new NotFoundException('user not found')
+      throw new NotFoundException('User not found')
     }
 
     return { data: user }
   }
 
-  async update(id: string, updateUser: UpdateUserDto): Promise<IUserResponse> {
+  async update(
+    id: string,
+    updateUser: UpdateUserDto,
+  ): Promise<{ data: IUserResponse }> {
     try {
       const userUpdated = await this.prisma.user.update({
         where: { id },
@@ -66,7 +69,7 @@ export class UserService {
 
       return { data: userWithoutPassword }
     } catch (error) {
-      throw new NotFoundException('user not found')
+      throw new NotFoundException('User not found')
     }
   }
 
@@ -74,11 +77,14 @@ export class UserService {
     try {
       await this.prisma.user.delete({ where: { id } })
     } catch (error) {
-      throw new NotFoundException('user not found')
+      throw new NotFoundException('User not found')
     }
   }
 
-  async findAll(page: number, limit: number): Promise<IUserResponse> {
+  async findAll(
+    page: number,
+    limit: number,
+  ): Promise<{ data: IUserResponse[] }> {
     const startIndex = (page - 1) * limit
     const endIndex = startIndex + limit
 
@@ -98,6 +104,11 @@ export class UserService {
   }
 
   async findOne(id: string): Promise<IUser> {
-    return await this.prisma.user.findUnique({ where: { id } })
+    const user = await this.prisma.user.findUnique({ where: { id } })
+    if (!user) {
+      throw new NotFoundException('User not found')
+    }
+
+    return user
   }
 }
