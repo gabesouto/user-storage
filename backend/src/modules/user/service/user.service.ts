@@ -1,11 +1,10 @@
-import { PrismaService } from '@database//prisma.service'
-import { ExcludeService } from '@helpers/exclude.service'
 import { Injectable, NotFoundException } from '@nestjs/common'
+import * as bcrypt from 'bcrypt'
 import { CreateUserDto, UpdateUserDto } from '@user/dto/user.dto'
+import { PrismaService } from '@database/prisma.service'
+import { ExcludeService } from '@helpers/exclude.service'
 import { IUser } from '@user/interface/user.interface'
 import { IUserResponse } from '@user/interface/userResponse.interface'
-
-import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class UserService {

@@ -75,6 +75,13 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
+    "moduleNameMapper": {
+      "^@user/(.*)$": "<rootDir>/modules/user/$1",
+      "^@database/(.*)$": "<rootDir>/modules/database/$1",
+      "^@helpers/(.*)$": "<rootDir>/modules/helpers/$1",
+      "^@auth/(.*)$": "<rootDir>/modules/auth/$1"
+    },
+  
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   },
