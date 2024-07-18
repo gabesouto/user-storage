@@ -13,9 +13,11 @@ import {
   ParseIntPipe,
   DefaultValuePipe,
   Query,
+  UseGuards,
 } from '@nestjs/common'
 import { UserService } from '../service/user.service'
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
+import { AuthGuard } from 'src/modules/auth/auth.guard'
 
 @Controller('users')
 @UsePipes(ValidationPipe)
@@ -41,6 +43,7 @@ export class UserController {
     return await this.userService.findById(id)
   }
 
+  @UseGuards(AuthGuard)
   @Put(':id')
   async update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -49,6 +52,7 @@ export class UserController {
     return this.userService.update(id, updateUser)
   }
 
+  @UseGuards(AuthGuard)
   @Delete(':id')
   @HttpCode(204)
   async delete(@Param('id', ParseUUIDPipe) id: string) {
