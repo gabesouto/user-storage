@@ -11,10 +11,10 @@ import { LoginDto } from './dto/login.dto'
 @Controller('auth')
 @UsePipes(ValidationPipe)
 export class AuthController {
-  constructor(private readonly auth: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
-  @Post('signin')
+  @Post('login')
   async login(@Body() loginPayload: LoginDto) {
-    return await this.auth.signIn(loginPayload)
+    return await this.authService.login(loginPayload)
   }
 }
