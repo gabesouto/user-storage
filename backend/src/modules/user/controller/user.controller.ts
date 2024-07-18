@@ -17,8 +17,8 @@ import {
 } from '@nestjs/common'
 import { UserService } from '../service/user.service'
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
-import { AuthGuard } from 'src/modules/auth/auth.guard'
-import { RoleGuard } from 'src/modules/auth/role.guard'
+import { AuthGuard } from 'src/modules/auth/guards/auth.guard'
+import { RoleGuard } from 'src/modules/auth/guards/role.guard'
 
 @Controller('users')
 @UsePipes(ValidationPipe)
@@ -39,18 +39,19 @@ export class UserController {
     return this.userService.findAll(page, limit)
   }
 
-  @UseGuards(AuthGuard, RoleGuard)
+  @UseGuards(AuthGuard)
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return await this.userService.findOne(id)
   }
 
+  @UseGuards(AuthGuard)
   @Get('/find')
   async findByEmail(@Body() email: string) {
     return await this.userService.findByEmail(email)
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RoleGuard)
   @Put(':id')
   async update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -59,7 +60,7 @@ export class UserController {
     return this.userService.update(id, updateUser)
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RoleGuard)
   @Delete(':id')
   @HttpCode(204)
   async delete(@Param('id', ParseUUIDPipe) id: string) {

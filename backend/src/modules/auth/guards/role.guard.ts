@@ -1,5 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common'
-import { UserService } from '../user/service/user.service'
+import { UserService } from '../../user/service/user.service'
+import { UserRoles } from 'src/modules/user/enums/user.enum'
 
 @Injectable()
 export class RoleGuard implements CanActivate {
@@ -14,7 +15,7 @@ export class RoleGuard implements CanActivate {
       const user = await this.userService.findOne(id)
       console.log(user, 'role')
 
-      return user.role === 'admin'
+      return user.role === UserRoles.ADMIN
     }
 
     return false
