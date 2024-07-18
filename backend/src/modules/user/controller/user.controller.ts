@@ -13,21 +13,25 @@ import {
   ParseIntPipe,
   DefaultValuePipe,
   Query,
+  UseGuards,
 } from '@nestjs/common'
 import { UserService } from '../service/user.service'
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
+import { AuthGuard } from '../../auth/guards/auth.guard'
+import { RoleGuard } from '../../auth/guards/role.guard'
 
 @Controller('users')
 @UsePipes(ValidationPipe)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
+  @Post('create')
   async create(@Body() user: CreateUserDto) {
     return await this.userService.create(user)
   }
 
   @Get()
+  @UseGuards(AuthGuard)
   async findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe)
     page: number,
@@ -36,11 +40,19 @@ export class UserController {
     return this.userService.findAll(page, limit)
   }
 
-  @Get('/find/:id')
+  @UseGuards(AuthGuard)
+  @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return await this.userService.findById(id)
+    return await this.userService.findOne(id)
   }
 
+  @UseGuards(AuthGuard)
+  @Get('/find')
+  async findByEmail(@Body() email: string) {
+    return await this.userService.findByEmail(email)
+  }
+
+  @UseGuards(AuthGuard, RoleGuard)
   @Put(':id')
   async update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -49,6 +61,7 @@ export class UserController {
     return this.userService.update(id, updateUser)
   }
 
+  @UseGuards(AuthGuard, RoleGuard)
   @Delete(':id')
   @HttpCode(204)
   async delete(@Param('id', ParseUUIDPipe) id: string) {

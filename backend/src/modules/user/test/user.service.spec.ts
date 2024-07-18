@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { randomUUID } from 'crypto'
-import { PrismaService } from '../database/prisma.service'
-import { UserService } from '../modules/user/service/user.service'
-import { ExcludeService } from '../modules/user/helpers/exclude.service'
+import { PrismaService } from '../../database/prisma.service'
+import { UserService } from '../service/user.service'
+import { ExcludeService } from '../../helpers/exclude.service'
 import { NotFoundException } from '@nestjs/common'
 
-describe('PostsService', () => {
+describe('UserService', () => {
   let service: UserService
   let prisma: PrismaService
 
@@ -115,9 +115,9 @@ describe('PostsService', () => {
 
   describe('findOne', () => {
     it(`should return a single user`, async () => {
-      const response = await service.findById(mockUser.id)
+      const response = await service.findOne(mockUser.id)
 
-      expect(response).toEqual({ data: mockUser })
+      expect(response).toEqual(mockUser)
       expect(prisma.user.findUnique).toHaveBeenCalledTimes(1)
       expect(prisma.user.findUnique).toHaveBeenCalledWith({
         where: { id: mockUser.id },
@@ -127,8 +127,8 @@ describe('PostsService', () => {
     it('should throw a NotFoundException when user is not found', async () => {
       jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null)
 
-      await expect(service.findById('99')).rejects.toThrow(
-        new NotFoundException('user not found'),
+      await expect(service.findOne('99')).rejects.toThrow(
+        new NotFoundException('User not found'),
       )
     })
   })
@@ -152,11 +152,11 @@ describe('PostsService', () => {
       })
     })
 
-    it(`should return NotFoundException when no post is found`, async () => {
+    it(`should return NotFoundException when no user is found`, async () => {
       jest.spyOn(prisma.user, 'update').mockResolvedValue(null)
 
       await expect(service.update(randomUUID(), mockUser)).rejects.toThrow(
-        new NotFoundException('user not found'),
+        new NotFoundException('User not found'),
       )
     })
   })
@@ -170,7 +170,7 @@ describe('PostsService', () => {
       jest.spyOn(prisma.user, 'delete').mockResolvedValue(null)
 
       await expect(service.update(randomUUID(), mockUser)).rejects.toThrow(
-        new NotFoundException('user not found'),
+        new NotFoundException('User not found'),
       )
     })
   })
@@ -190,3 +190,5 @@ describe('PostsService', () => {
     })
   })
 })
+
+// TODO: AJUTAR PADRAO DE RESPOSTAS DAS EXCEPTIONS, ORGANIZAR COMMITS

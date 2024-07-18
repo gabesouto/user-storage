@@ -1,5 +1,8 @@
-import { IUser } from './user.interface'
-
-export interface IUserResponse {
-  data: Partial<IUser> | Partial<IUser>[]
+export type IUserResponse = {
+  fullName: string
+  id: string
+  role: string
+  email: string
+  age: number
+  createdAt: Date
 }
