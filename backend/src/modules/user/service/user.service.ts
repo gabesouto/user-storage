@@ -119,7 +119,7 @@ export class UserService {
       take: endIndex,
     })
 
-    if (!users) {
+    if (users.length === 0) {
       throw new NotFoundException('No users found for the given page and limit')
     }
     const usersWithoutPasswords = users.map((user) =>
