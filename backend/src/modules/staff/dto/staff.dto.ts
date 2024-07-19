@@ -8,6 +8,9 @@ import {
   Min,
   Max,
   IsDate,
+  IsOptional,
+  IsUUID,
+  Matches,
 } from 'class-validator'
 
 export class CreateStaffDto {
@@ -56,6 +59,13 @@ export class CreateStaffDto {
 }
 
 export class ResponseStaffMemberDto {
+  @IsUUID('4')
+  @ApiProperty({
+    description: 'The unique identifier of the staff member',
+    example: 'b1d5f6a0-4736-4b8f-8d3c-b4a4d5e77bde',
+  })
+  id: string
+
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -63,6 +73,16 @@ export class ResponseStaffMemberDto {
     example: 'John Doe',
   })
   fullName: string
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(8)
+  @ApiProperty({
+    description:
+      'The password of the staff member. Must be at least 8 characters long.',
+    example: 'securePassword123',
+  })
+  password: string
 
   @IsString()
   @IsNotEmpty()
@@ -95,4 +115,13 @@ export class ResponseStaffMemberDto {
     example: '2024-07-19T15:30:00.000Z',
   })
   createdAt: Date
+
+  @IsOptional()
+  @IsString()
+  @Matches(/^\+?[1-9]\d{1,14}$/) // Simple phone number validation
+  @ApiProperty({
+    description: 'The phone number of the staff member (optional).',
+    example: '+1234567890',
+  })
+  phoneNumber?: string
 }
