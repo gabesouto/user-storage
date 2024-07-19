@@ -38,14 +38,6 @@ export class CreateUserDto {
   })
   email: string
 
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    description: 'The role of the user',
-    example: 'admin',
-  })
-  role: string
-
   @IsInt()
   @Min(0)
   @Max(120)
@@ -81,14 +73,6 @@ export class UpdateUserDto {
     example: 'john.doe@example.com',
   })
   email: string
-
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    description: 'The role of the user',
-    example: 'admin',
-  })
-  role: string
 
   @IsInt()
   @Min(0)
