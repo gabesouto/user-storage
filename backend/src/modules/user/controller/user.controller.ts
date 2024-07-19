@@ -25,7 +25,11 @@ import {
   ApiSecurity,
   ApiParam,
 } from '@nestjs/swagger'
-import { CreateUserDto, UpdateUserDto } from '@user/dto/user.dto'
+import {
+  CreateUserDto,
+  ResponseUserDto,
+  UpdateUserDto,
+} from '@user/dto/user.dto'
 import { UserService } from '@user/service/user.service'
 
 @ApiTags('users')
@@ -42,7 +46,7 @@ export class UserController {
   @ApiResponse({
     status: 201,
     description: 'The user has been successfully created.',
-    type: CreateUserDto,
+    type: ResponseUserDto,
   })
   @ApiResponse({
     status: 400,
@@ -78,7 +82,7 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'List of users',
-    type: [CreateUserDto],
+    type: [ResponseUserDto],
   })
   @ApiResponse({
     status: 401,
@@ -102,7 +106,7 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'User details',
-    type: CreateUserDto,
+    type: ResponseUserDto,
   })
   @ApiResponse({
     status: 404,
@@ -122,7 +126,7 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'User details',
-    type: CreateUserDto,
+    type: ResponseUserDto,
   })
   @ApiResponse({
     status: 404,
