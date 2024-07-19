@@ -4,8 +4,8 @@ CREATE TABLE "users" (
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "full_name" TEXT NOT NULL,
+    "phone_number" TEXT NOT NULL,
     "age" INTEGER NOT NULL,
-    "role" TEXT NOT NULL,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL,
 

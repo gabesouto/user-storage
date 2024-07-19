@@ -18,7 +18,7 @@ export class CreateStaffDto {
   @IsNotEmpty()
   @ApiProperty({
     description: 'The email address of the staff member. Must be unique.',
-    example: 'staff.member@example.com',
+    example: 'jane.smith@example.com',
   })
   email: string
 
@@ -28,7 +28,7 @@ export class CreateStaffDto {
   @ApiProperty({
     description:
       'The password for the staff member. Must be at least 8 characters long.',
-    example: 'strongPassword123',
+    example: 'Password2024',
   })
   password: string
 
@@ -45,7 +45,7 @@ export class CreateStaffDto {
   @Max(120)
   @ApiProperty({
     description: 'The age of the staff member. Must be between 0 and 120.',
-    example: 35,
+    example: 28,
   })
   age: number
 
@@ -70,7 +70,7 @@ export class ResponseStaffMemberDto {
   @IsNotEmpty()
   @ApiProperty({
     description: 'The full name of the staff member',
-    example: 'John Doe',
+    example: 'Jane Smith',
   })
   fullName: string
 
@@ -80,7 +80,7 @@ export class ResponseStaffMemberDto {
   @ApiProperty({
     description:
       'The password of the staff member. Must be at least 8 characters long.',
-    example: 'securePassword123',
+    example: 'Password2024',
   })
   password: string
 
@@ -96,7 +96,7 @@ export class ResponseStaffMemberDto {
   @IsNotEmpty()
   @ApiProperty({
     description: 'The email address of the staff member',
-    example: 'john.doe@example.com',
+    example: 'jane.smith@example.com',
   })
   email: string
 
@@ -105,7 +105,7 @@ export class ResponseStaffMemberDto {
   @Max(120)
   @ApiProperty({
     description: 'The age of the staff member. Must be between 0 and 120.',
-    example: 30,
+    example: 28,
   })
   age: number
 
