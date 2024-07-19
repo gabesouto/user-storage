@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import * as bcrypt from 'bcrypt'
 import { PrismaService } from '@database/prisma.service'
 import { CreateStaffDto, ResponseStaffMemberDto } from '@staff/dto/staff.dto'
@@ -29,5 +29,17 @@ export class StaffService {
     return {
       data: newStaffMember,
     }
+  }
+
+  async findByEmail(email: string): Promise<ResponseStaffMemberDto> {
+    const staffMember = await this.prisma.staff.findUnique({
+      where: { email },
+    })
+
+    if (!staffMember) {
+      throw new NotFoundException('Staff Member not found')
+    }
+
+    return staffMember
   }
 }

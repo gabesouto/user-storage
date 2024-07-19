@@ -81,12 +81,13 @@
       "^@user/(.*)$": "<rootDir>/modules/user/$1",
       "^@database/(.*)$": "<rootDir>/modules/database/$1",
       "^@helpers/(.*)$": "<rootDir>/modules/helpers/$1",
-      "^@auth/(.*)$": "<rootDir>/modules/auth/$1"
-    },
+      "^@auth/(.*)$": "<rootDir>/modules/auth/$1",
+         "^@staff/(.*)$": "<rootDir>/modules/staff/$1",
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   },
   "prisma": {
     "schema": "src/prisma/schema.prisma"
   }
+}
 }

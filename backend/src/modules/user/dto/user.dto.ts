@@ -10,7 +10,9 @@ import {
   IsDate,
   IsOptional,
   Matches,
+  IsUUID,
 } from 'class-validator'
+
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
@@ -58,6 +60,13 @@ export class CreateUserDto {
 }
 
 export class UpdateUserDto {
+  @IsUUID('4')
+  @ApiProperty({
+    description: 'The unique identifier of the user',
+    example: 'b1d5f6a0-4736-4b8f-8d3c-b4a4d5e77bde',
+  })
+  id: string
+
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -101,6 +110,13 @@ export class UpdateUserDto {
 }
 
 export class ResponseUserDto {
+  @IsUUID('4')
+  @ApiProperty({
+    description: 'The unique identifier of the user',
+    example: 'b1d5f6a0-4736-4b8f-8d3c-b4a4d5e77bde',
+  })
+  id: string
+
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -140,6 +156,7 @@ export class ResponseUserDto {
   })
   updatedAt: Date
 
+  @IsOptional()
   @IsString()
   @Matches(/^\+?[1-9]\d{1,14}$/) // Simple phone number validation
   @ApiProperty({

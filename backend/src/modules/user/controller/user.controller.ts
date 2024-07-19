@@ -1,5 +1,5 @@
 import { AuthGuard } from '@auth/guards/auth.guard'
-import { RoleGuard } from '@auth/guards/role.guard'
+
 import {
   Controller,
   UsePipes,
@@ -163,7 +163,7 @@ export class UserController {
     description: 'User not found',
   })
   @ApiSecurity('bearer')
-  @UseGuards(AuthGuard, RoleGuard)
+  @UseGuards(AuthGuard)
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateUser: UpdateUserDto,
@@ -187,7 +187,7 @@ export class UserController {
     description: 'User not found',
   })
   @ApiSecurity('bearer')
-  @UseGuards(AuthGuard, RoleGuard)
+  @UseGuards(AuthGuard)
   @HttpCode(204)
   async delete(@Param('id', ParseUUIDPipe) id: string) {
     return this.userService.delete(id)
