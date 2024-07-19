@@ -1,10 +1,12 @@
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './main.module'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import { WinstonModule } from 'nest-winston'
+import { winstonConfig } from './logger/winston.config'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
-
+  const logger = WinstonModule.createLogger(winstonConfig)
+  const app = await NestFactory.create(AppModule, { logger })
   const API_PORT = process.env.API_PORT || 3000
   const options = new DocumentBuilder()
     .setTitle('User Storage')

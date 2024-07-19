@@ -13,7 +13,6 @@ export class RoleGuard implements CanActivate {
     if (request?.user) {
       const { id } = request.user
       const user = await this.staffService.findOne(id)
-      console.log(user, 'role')
 
       return user.role === StaffRoles.ADMIN
     }
