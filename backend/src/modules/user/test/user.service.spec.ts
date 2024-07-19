@@ -4,55 +4,11 @@ import { randomUUID } from 'crypto'
 import { ExcludeService } from '@helpers/exclude.service'
 import { UserService } from '@user/service/user.service'
 import { PrismaService } from '@database/prisma.service'
+import { mockUser, mockUsers, mockUpdatedUser } from './user-service.mock'
 
 describe('UserService', () => {
   let service: UserService
   let prisma: PrismaService
-
-  const mockUser = {
-    id: randomUUID(),
-    fullName: 'mock user',
-    email: 'mock@gmail.com',
-    age: 24,
-    role: 'admin',
-    createdAt: Date.now(),
-  }
-
-  const mockUpdatedUser = {
-    fullName: 'updated mock user',
-    email: 'mock@gmail.com',
-    age: 20,
-    role: 'user',
-    id: mockUser.id,
-    createdAt: mockUser.createdAt,
-  }
-
-  const mockUsers = [
-    {
-      id: randomUUID(),
-      fullName: '1mock user',
-      email: 'moc1@gmail.com',
-      age: 24,
-      role: 'admin',
-      createdAt: Date.now(),
-    },
-    {
-      id: randomUUID(),
-      fullName: '2mock user',
-      email: 'moc2@gmail.com',
-      age: 24,
-      role: 'admin',
-      createdAt: Date.now(),
-    },
-    {
-      id: randomUUID(),
-      fullName: '3mock user',
-      email: 'mock3@gmail.com',
-      age: 24,
-      role: 'admin',
-      createdAt: Date.now(),
-    },
-  ]
 
   const prismaMock = {
     user: {
@@ -139,15 +95,17 @@ describe('UserService', () => {
         fullName: 'updated mock user',
         email: 'mock@gmail.com',
         age: 20,
-        role: 'user',
+        phoneNumber: '+8493839',
       }
       const response = await service.update(mockUser.id, mockUpdatedUser)
 
-      expect(response).toStrictEqual({
+      expect(response).toEqual({
         data: {
           ...mockToUpdateUser,
-          id: mockUser.id,
-          createdAt: mockUser.createdAt,
+          id: mockUpdatedUser.id,
+          createdAt: mockUpdatedUser.createdAt,
+          updatedAt: mockUpdatedUser.updatedAt,
+          phoneNumber: mockUpdatedUser.phoneNumber,
         },
       })
     })
@@ -177,18 +135,16 @@ describe('UserService', () => {
 
   describe('findAll', () => {
     it(`should return an array of users`, async () => {
-      const response = await service.findAll(1, 5)
+      const response = await service.findAll(1, 5, '')
 
       expect(response).toEqual({ data: mockUsers })
     })
 
     it(`should throw an error if there is no users for page selected`, async () => {
       jest.spyOn(prisma.user, 'findMany').mockResolvedValue(null)
-      await expect(service.findAll(100, 100)).rejects.toThrow(
+      await expect(service.findAll(100, 100, '')).rejects.toThrow(
         new NotFoundException('No users found for the given page and limit'),
       )
     })
   })
 })
-
-// TODO: AJUTAR PADRAO DE RESPOSTAS DAS EXCEPTIONS, ORGANIZAR COMMITS
