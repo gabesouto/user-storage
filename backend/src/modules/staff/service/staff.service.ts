@@ -42,4 +42,13 @@ export class StaffService {
 
     return staffMember
   }
+
+  async findOne(id: string): Promise<ResponseStaffMemberDto> {
+    const user = await this.prisma.staff.findUnique({ where: { id } })
+    if (!user) {
+      throw new NotFoundException('User not found')
+    }
+
+    return user
+  }
 }

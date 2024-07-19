@@ -9,7 +9,7 @@ import { AuthService } from '../service/auth.service'
 import { ApiTags } from '@nestjs/swagger'
 import { LoginDto } from '@auth/dto/auth.dto'
 
-@ApiTags('auth')
+@ApiTags('Auth')
 @Controller('auth')
 @UsePipes(ValidationPipe)
 export class AuthController {
