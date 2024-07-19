@@ -8,7 +8,6 @@ import {
 import { PrismaService } from '@database/prisma.service'
 import { ExcludeService } from '@helpers/exclude.service'
 import { IUser } from '@user/interface/user.interface'
-import { IUserResponse } from '@user/interface/user-response.interface'
 
 @Injectable()
 export class UserService {
@@ -33,6 +32,7 @@ export class UserService {
         age,
         email,
         createdAt: new Date(),
+        updatedAt: new Date(),
       },
     })
 
@@ -64,14 +64,14 @@ export class UserService {
     try {
       const userUpdated = await this.prisma.user.update({
         where: { id },
-        data: updateUser,
+        data: { ...updateUser, updatedAt: new Date() },
       })
 
       const userWithoutPassword = this.excludeService.exclude(userUpdated, [
         'password',
       ])
 
-      return { data: userWithoutPassword as IUserResponse }
+      return { data: userWithoutPassword as ResponseUserDto }
     } catch (error) {
       throw new NotFoundException('User not found')
     }

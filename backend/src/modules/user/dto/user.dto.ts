@@ -88,6 +88,13 @@ export class UpdateUserDto {
     example: 30,
   })
   age: number
+
+  @IsDate()
+  @ApiProperty({
+    description: 'The date when the user was updated.',
+    example: '2024-07-19T15:30:00.000Z',
+  })
+  updatedAt: Date
 }
 
 export class ResponseUserDto {
@@ -130,4 +137,11 @@ export class ResponseUserDto {
     example: '2024-07-19T15:30:00.000Z',
   })
   createdAt: Date
+
+  @IsDate()
+  @ApiProperty({
+    description: 'The date when the user was updated.',
+    example: '2024-07-19T15:30:00.000Z',
+  })
+  updatedAt: Date
 }
