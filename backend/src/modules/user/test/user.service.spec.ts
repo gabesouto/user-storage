@@ -4,63 +4,19 @@ import { randomUUID } from 'crypto'
 import { ExcludeService } from '@helpers/exclude.service'
 import { UserService } from '@user/service/user.service'
 import { PrismaService } from '@database/prisma.service'
+import { mockUser, mockUsers, mockUpdatedUser } from './user-service.mock'
 
 describe('UserService', () => {
   let service: UserService
   let prisma: PrismaService
 
-  const mockUser = {
-    id: randomUUID(),
-    fullName: 'mock user',
-    email: 'mock@gmail.com',
-    age: 24,
-    role: 'admin',
-    createdAt: Date.now(),
-  }
-
-  const mockUpdatedUser = {
-    fullName: 'updated mock user',
-    email: 'mock@gmail.com',
-    age: 20,
-    role: 'user',
-    id: mockUser.id,
-    createdAt: mockUser.createdAt,
-  }
-
-  const mockUsers = [
-    {
-      id: randomUUID(),
-      fullName: '1mock user',
-      email: 'moc1@gmail.com',
-      age: 24,
-      role: 'admin',
-      createdAt: Date.now(),
-    },
-    {
-      id: randomUUID(),
-      fullName: '2mock user',
-      email: 'moc2@gmail.com',
-      age: 24,
-      role: 'admin',
-      createdAt: Date.now(),
-    },
-    {
-      id: randomUUID(),
-      fullName: '3mock user',
-      email: 'mock3@gmail.com',
-      age: 24,
-      role: 'admin',
-      createdAt: Date.now(),
-    },
-  ]
-
   const prismaMock = {
     user: {
-      create: jest.fn().mockReturnValue(mockUser),
+      create: jest.fn().mockResolvedValue(mockUser),
       findMany: jest.fn().mockResolvedValue(mockUsers),
       findUnique: jest.fn().mockResolvedValue(mockUser),
       update: jest.fn().mockResolvedValue(mockUpdatedUser),
-      delete: jest.fn(), // O método delete não retorna nada
+      delete: jest.fn().mockResolvedValue(undefined),
     },
   }
 
@@ -82,23 +38,7 @@ describe('UserService', () => {
   })
 
   describe('create', () => {
-    it(`should create a new user`, async () => {
-      const newUser = {
-        fullName: 'mock user',
-        email: 'mock@gmail.com',
-        password: '12345678',
-        age: 24,
-        role: 'admin',
-      }
-
-      const response = await service.create(newUser)
-      expect(response).toStrictEqual({ data: mockUser })
-      expect(prisma.user.create).toHaveBeenCalledTimes(1)
-    })
-  })
-
-  describe('create', () => {
-    it(`should create a new user`, async () => {
+    it('should create a new user', async () => {
       const newUser = {
         fullName: 'mock user',
         email: 'mock@gmail.com',
@@ -114,7 +54,7 @@ describe('UserService', () => {
   })
 
   describe('findOne', () => {
-    it(`should return a single user`, async () => {
+    it('should return a single user', async () => {
       const response = await service.findOne(mockUser.id)
 
       expect(response).toEqual(mockUser)
@@ -124,7 +64,7 @@ describe('UserService', () => {
       })
     })
 
-    it('should throw a NotFoundException when user is not found', async () => {
+    it('should throw NotFoundException when user is not found', async () => {
       jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null)
 
       await expect(service.findOne('99')).rejects.toThrow(
@@ -133,62 +73,79 @@ describe('UserService', () => {
     })
   })
 
-  describe('updateOne', () => {
-    it(`should update a user`, async () => {
+  describe('update', () => {
+    it('should update a user', async () => {
       const mockToUpdateUser = {
+        id: mockUser.id,
+        updatedAt: new Date(),
         fullName: 'updated mock user',
-        email: 'mock@gmail.com',
+        email: 'updated@gmail.com',
         age: 20,
-        role: 'user',
+        phoneNumber: '+8493839',
       }
-      const response = await service.update(mockUser.id, mockUpdatedUser)
+      const response = await service.update(mockUser.id, mockToUpdateUser)
 
-      expect(response).toStrictEqual({
+      console.log('test response', response)
+
+      expect(response).toEqual({
         data: {
-          ...mockToUpdateUser,
+          ...mockUpdatedUser,
           id: mockUser.id,
           createdAt: mockUser.createdAt,
+          updatedAt: mockUpdatedUser.updatedAt,
+          phoneNumber: mockUpdatedUser.phoneNumber,
         },
       })
     })
 
-    it(`should return NotFoundException when no user is found`, async () => {
+    it('should throw NotFoundException when update fails', async () => {
       jest.spyOn(prisma.user, 'update').mockResolvedValue(null)
 
-      await expect(service.update(randomUUID(), mockUser)).rejects.toThrow(
-        new NotFoundException('User not found'),
-      )
+      await expect(
+        service.update(randomUUID(), mockUpdatedUser),
+      ).rejects.toThrow(new NotFoundException('User not found'))
     })
   })
 
-  describe('deleteOne', () => {
-    it(`should delete a user`, async () => {
+  describe('delete', () => {
+    it('should delete a user', async () => {
       expect(await service.delete(mockUser.id)).toBeUndefined()
+      expect(prisma.user.delete).toHaveBeenCalledTimes(1)
     })
 
-    it(`should return NotFoundException when no user is found`, async () => {
-      jest.spyOn(prisma.user, 'delete').mockResolvedValue(null)
+    it('should throw NotFoundException when delete fails', async () => {
+      jest.spyOn(prisma.user, 'delete').mockRejectedValue(new Error())
 
-      await expect(service.update(randomUUID(), mockUser)).rejects.toThrow(
+      await expect(service.delete(randomUUID())).rejects.toThrow(
         new NotFoundException('User not found'),
       )
     })
   })
 
   describe('findAll', () => {
-    it(`should return an array of users`, async () => {
-      const response = await service.findAll(1, 5)
+    it('should return an array of users', async () => {
+      const response = await service.findAll(1, 5, '')
 
       expect(response).toEqual({ data: mockUsers })
+      expect(prisma.user.findMany).toHaveBeenCalledTimes(1)
     })
 
-    it(`should throw an error if there is no users for page selected`, async () => {
-      jest.spyOn(prisma.user, 'findMany').mockResolvedValue(null)
-      await expect(service.findAll(100, 100)).rejects.toThrow(
+    it('should return filtered users based on field and value', async () => {
+      const filter = 'age:24'
+      const response = await service.findAll(1, 5, filter)
+
+      expect(response).toEqual({ data: mockUsers })
+      expect(prisma.user.findMany).toHaveBeenCalledWith({
+        where: { age: 24 },
+      })
+    })
+
+    it('should throw NotFoundException if no users found for page selected', async () => {
+      jest.spyOn(prisma.user, 'findMany').mockResolvedValue([])
+
+      await expect(service.findAll(100, 100, '')).rejects.toThrow(
         new NotFoundException('No users found for the given page and limit'),
       )
     })
   })
 })
-
-// TODO: AJUTAR PADRAO DE RESPOSTAS DAS EXCEPTIONS, ORGANIZAR COMMITS

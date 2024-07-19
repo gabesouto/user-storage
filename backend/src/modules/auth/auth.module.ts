@@ -1,13 +1,13 @@
 import { HelpersModule } from '@helpers/helpers.module'
 import { forwardRef, Module } from '@nestjs/common'
 import { JwtModule } from '@nestjs/jwt'
-import { UsersModule } from '@user/user.module'
-import { AuthController } from './auth.controller'
-import { AuthService } from './auth.service'
+import { AuthController } from './controller/auth.controller'
+import { AuthService } from './service/auth.service'
+import { StaffModule } from '@staff/staff.module'
 
 @Module({
   imports: [
-    forwardRef(() => UsersModule),
+    forwardRef(() => StaffModule),
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET || '',

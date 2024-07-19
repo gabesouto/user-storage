@@ -1,5 +1,6 @@
 import { AuthGuard } from '@auth/guards/auth.guard'
 import { RoleGuard } from '@auth/guards/role.guard'
+
 import {
   Controller,
   UsePipes,
@@ -32,7 +33,7 @@ import {
 } from '@user/dto/user.dto'
 import { UserService } from '@user/service/user.service'
 
-@ApiTags('users')
+@ApiTags('Users')
 @Controller('users')
 @UsePipes(ValidationPipe)
 export class UserController {
@@ -52,6 +53,8 @@ export class UserController {
     status: 400,
     description: 'Invalid input data.',
   })
+  @ApiSecurity('bearer')
+  @UseGuards(AuthGuard, RoleGuard)
   async create(@Body() user: CreateUserDto) {
     return await this.userService.create(user)
   }
@@ -88,6 +91,7 @@ export class UserController {
     status: 401,
     description: 'Unauthorized access',
   })
+  @UseGuards(AuthGuard)
   async findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(5), ParseIntPipe) limit: number,
@@ -116,26 +120,6 @@ export class UserController {
   @UseGuards(AuthGuard)
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return await this.userService.findOne(id)
-  }
-
-  @Post('/find')
-  @ApiBody({
-    description: 'Email to search for a user',
-    type: String,
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'User details',
-    type: ResponseUserDto,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'User not found',
-  })
-  @ApiSecurity('bearer')
-  @UseGuards(AuthGuard)
-  async findByEmail(@Body() email: string) {
-    return await this.userService.findByEmail(email)
   }
 
   @Put(':id')

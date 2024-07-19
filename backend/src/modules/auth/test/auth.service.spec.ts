@@ -6,25 +6,25 @@ import {
 } from '@nestjs/common'
 import { JwtService, JwtModule } from '@nestjs/jwt'
 import { TestingModule, Test } from '@nestjs/testing'
-import { IUserResponse } from '@user/interface/userResponse.interface'
-import { UserService } from '@user/service/user.service'
-import { UsersModule } from '@user/user.module'
+import { StaffService } from '@staff/service/staff.service'
+import { StaffModule } from '@staff/staff.module'
 import * as bcrypt from 'bcrypt'
 import { randomUUID } from 'crypto'
-import { AuthController } from '../auth.controller'
-import { AuthService } from '../auth.service'
+import { AuthController } from '../controller/auth.controller'
+import { AuthService } from '../service/auth.service'
 import { ExcludeService } from '@helpers/exclude.service'
+import { ResponseStaffMemberDto } from '@staff/dto/staff.dto'
 
 describe('AuthService', () => {
   let authService: AuthService
-  let userService: UserService
   let jwtService: JwtService
   let excludeService: ExcludeService
+  let staffService: StaffService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        forwardRef(() => UsersModule),
+        forwardRef(() => StaffModule),
         HelpersModule,
         JwtModule.register({
           global: true,
@@ -33,14 +33,13 @@ describe('AuthService', () => {
         }),
       ],
       controllers: [AuthController],
-      providers: [AuthService],
-      exports: [AuthService],
+      providers: [AuthService, ExcludeService],
     }).compile()
 
     authService = module.get<AuthService>(AuthService)
-    userService = module.get<UserService>(UserService)
     jwtService = module.get<JwtService>(JwtService)
     excludeService = module.get<ExcludeService>(ExcludeService)
+    staffService = module.get<StaffService>(StaffService)
   })
 
   afterEach(() => {
@@ -51,35 +50,35 @@ describe('AuthService', () => {
     expect(authService).toBeDefined()
   })
 
-  describe('signIn', () => {
+  describe('login', () => {
     it('should return access_token when valid email and password are provided', async () => {
-      // Mock userService.findByEmail to return a valid user response
-      const mockUser = {
+      // Mock staffService.findByEmail to return a valid staff member response
+      const mockStaffMember = {
         id: randomUUID(),
         fullName: 'auth mock user',
         email: 'authmock@gmail.com',
         age: 24,
         role: 'user',
         password: await bcrypt.hash('password', 10),
-        createdAt: Date.now(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       }
 
       jest
-        .spyOn(userService, 'findByEmail')
-        .mockResolvedValue({ data: mockUser as unknown as IUserResponse })
-      jest.spyOn(userService, 'findOne').mockResolvedValue(mockUser)
+        .spyOn(staffService, 'findByEmail')
+        .mockResolvedValue(mockStaffMember as unknown as ResponseStaffMemberDto)
       jest.spyOn(bcrypt, 'compare').mockResolvedValue(true as never)
       jest.spyOn(jwtService, 'signAsync').mockResolvedValue('mockAccessToken')
       jest.spyOn(excludeService, 'exclude').mockReturnValue({
-        id: mockUser.id,
-        fullName: mockUser.fullName,
-        email: mockUser.email,
-        age: mockUser.age,
-        role: mockUser.role,
-        createdAt: mockUser.createdAt,
+        id: mockStaffMember.id,
+        fullName: mockStaffMember.fullName,
+        email: mockStaffMember.email,
+        age: mockStaffMember.age,
+        role: mockStaffMember.role,
+        createdAt: mockStaffMember.createdAt,
       })
 
-      // Call signIn with valid credentials
+      // Call login with valid credentials
       const result = await authService.login({
         email: 'authmock@gmail.com',
         pass: 'password',
@@ -89,11 +88,11 @@ describe('AuthService', () => {
       expect(result.access_token).toBeDefined()
     })
 
-    it('should throw NotFoundException when user with given email is not found', async () => {
-      // Mock userService.findByEmail to return null (user not found)
-      jest.spyOn(userService, 'findByEmail').mockResolvedValue(null)
+    it('should throw NotFoundException when staff member with given email is not found', async () => {
+      // Mock staffService.findByEmail to return null (staff member not found)
+      jest.spyOn(staffService, 'findByEmail').mockResolvedValue(null)
 
-      // Call signIn with invalid email
+      // Call login with invalid email
       await expect(
         authService.login({
           email: 'nonexistent@example.com',
@@ -103,24 +102,24 @@ describe('AuthService', () => {
     })
 
     it('should throw UnauthorizedException when invalid password is provided', async () => {
-      // Mock userService.findByEmail to return a valid user response
-      const mockUser = {
+      // Mock staffService.findByEmail to return a valid staff member response
+      const mockStaffMember = {
         id: randomUUID(),
         fullName: 'auth mock user',
         email: 'authmock@gmail.com',
         age: 24,
         role: 'user',
         password: await bcrypt.hash('password', 10),
-        createdAt: Date.now(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       }
 
       jest
-        .spyOn(userService, 'findByEmail')
-        .mockResolvedValue({ data: mockUser as unknown as IUserResponse })
-      jest.spyOn(userService, 'findOne').mockResolvedValue(mockUser)
+        .spyOn(staffService, 'findByEmail')
+        .mockResolvedValue(mockStaffMember as unknown as ResponseStaffMemberDto)
       jest.spyOn(bcrypt, 'compare').mockResolvedValue(false as never)
 
-      // Call signIn with invalid password
+      // Call login with invalid password
       await expect(
         authService.login({
           email: 'authmock@gmail.com',

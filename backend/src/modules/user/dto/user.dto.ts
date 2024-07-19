@@ -8,6 +8,9 @@ import {
   Min,
   Max,
   IsDate,
+  IsOptional,
+  Matches,
+  IsUUID,
 } from 'class-validator'
 
 export class CreateUserDto {
@@ -37,14 +40,6 @@ export class CreateUserDto {
   })
   email: string
 
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    description: 'The role of the user',
-    example: 'admin',
-  })
-  role: string
-
   @IsInt()
   @Min(0)
   @Max(120)
@@ -53,9 +48,25 @@ export class CreateUserDto {
     example: 30,
   })
   age: number
+
+  @IsOptional()
+  @IsString()
+  @Matches(/^\+?[1-9]\d{1,14}$/) // Simple phone number validation
+  @ApiProperty({
+    description: 'The phone number of the user (optional).',
+    example: '+1234567890',
+  })
+  phoneNumber?: string
 }
 
 export class UpdateUserDto {
+  @IsUUID('4')
+  @ApiProperty({
+    description: 'The unique identifier of the user',
+    example: 'b1d5f6a0-4736-4b8f-8d3c-b4a4d5e77bde',
+  })
+  id: string
+
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -71,14 +82,6 @@ export class UpdateUserDto {
     example: 'john.doe@example.com',
   })
   email: string
-
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    description: 'The role of the user',
-    example: 'admin',
-  })
-  role: string
 
   @IsInt()
   @Min(0)
@@ -88,9 +91,32 @@ export class UpdateUserDto {
     example: 30,
   })
   age: number
+
+  @IsDate()
+  @ApiProperty({
+    description: 'The date when the user was updated.',
+    example: '2024-07-19T15:30:00.000Z',
+  })
+  updatedAt: Date
+
+  @IsOptional()
+  @IsString()
+  @Matches(/^\+?[1-9]\d{1,14}$/) // Simple phone number validation
+  @ApiProperty({
+    description: 'The phone number of the user (optional).',
+    example: '+1234567890',
+  })
+  phoneNumber?: string
 }
 
 export class ResponseUserDto {
+  @IsUUID('4')
+  @ApiProperty({
+    description: 'The unique identifier of the user',
+    example: 'b1d5f6a0-4736-4b8f-8d3c-b4a4d5e77bde',
+  })
+  id: string
+
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -106,14 +132,6 @@ export class ResponseUserDto {
     example: 'john.doe@example.com',
   })
   email: string
-
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    description: 'The role of the user',
-    example: 'admin',
-  })
-  role: string
 
   @IsInt()
   @Min(0)
@@ -130,4 +148,20 @@ export class ResponseUserDto {
     example: '2024-07-19T15:30:00.000Z',
   })
   createdAt: Date
+
+  @IsDate()
+  @ApiProperty({
+    description: 'The date when the user was updated.',
+    example: '2024-07-19T15:30:00.000Z',
+  })
+  updatedAt: Date
+
+  @IsOptional()
+  @IsString()
+  @Matches(/^\+?[1-9]\d{1,14}$/) // Simple phone number validation
+  @ApiProperty({
+    description: 'The phone number of the user (optional).',
+    example: '+1234567890',
+  })
+  phoneNumber?: string
 }
