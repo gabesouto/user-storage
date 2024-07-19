@@ -17,9 +17,11 @@ import {
   Delete,
   HttpCode,
 } from '@nestjs/common'
+import { ApiTags } from '@nestjs/swagger'
 import { CreateUserDto, UpdateUserDto } from '@user/dto/user.dto'
 import { UserService } from '@user/service/user.service'
 
+@ApiTags('users')
 @Controller('users')
 @UsePipes(ValidationPipe)
 export class UserController {
