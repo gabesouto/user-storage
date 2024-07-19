@@ -18,7 +18,7 @@ export class UserService {
 
   async create({
     fullName,
-    role,
+    phoneNumber,
     age,
     password,
     email,
@@ -28,7 +28,7 @@ export class UserService {
       data: {
         fullName,
         password: hashPassword,
-        role,
+        phoneNumber,
         age,
         email,
         createdAt: new Date(),

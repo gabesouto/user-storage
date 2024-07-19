@@ -8,8 +8,9 @@ import {
   Min,
   Max,
   IsDate,
+  IsOptional,
+  Matches,
 } from 'class-validator'
-
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
@@ -53,6 +54,15 @@ export class CreateUserDto {
     example: 30,
   })
   age: number
+
+  @IsOptional()
+  @IsString()
+  @Matches(/^\+?[1-9]\d{1,14}$/) // Simple phone number validation
+  @ApiProperty({
+    description: 'The phone number of the user (optional).',
+    example: '+1234567890',
+  })
+  phoneNumber?: string
 }
 
 export class UpdateUserDto {
@@ -95,6 +105,15 @@ export class UpdateUserDto {
     example: '2024-07-19T15:30:00.000Z',
   })
   updatedAt: Date
+
+  @IsOptional()
+  @IsString()
+  @Matches(/^\+?[1-9]\d{1,14}$/) // Simple phone number validation
+  @ApiProperty({
+    description: 'The phone number of the user (optional).',
+    example: '+1234567890',
+  })
+  phoneNumber?: string
 }
 
 export class ResponseUserDto {
@@ -113,14 +132,6 @@ export class ResponseUserDto {
     example: 'john.doe@example.com',
   })
   email: string
-
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    description: 'The role of the user',
-    example: 'admin',
-  })
-  role: string
 
   @IsInt()
   @Min(0)
@@ -144,4 +155,12 @@ export class ResponseUserDto {
     example: '2024-07-19T15:30:00.000Z',
   })
   updatedAt: Date
+
+  @IsString()
+  @Matches(/^\+?[1-9]\d{1,14}$/) // Simple phone number validation
+  @ApiProperty({
+    description: 'The phone number of the user (optional).',
+    example: '+1234567890',
+  })
+  phoneNumber?: string
 }
