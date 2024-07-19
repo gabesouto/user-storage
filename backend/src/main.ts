@@ -11,8 +11,9 @@ async function bootstrap() {
     .setDescription('User storage system by Meu Guru')
     .setVersion('1.0')
     .addServer('http://localhost:3000/', 'Local environment')
-    .addTag('users')
     .addTag('auth')
+    .addTag('users')
+    .addBearerAuth()
     .build()
 
   const document = SwaggerModule.createDocument(app, options)
