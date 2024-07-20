@@ -1,31 +1,29 @@
 // LoginForm.test.js
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
-import LoginForm from '../login/login.form';
-import Login from '../login/page';
+import React from 'react'
+import { render, screen, fireEvent } from '@testing-library/react'
+import '@testing-library/jest-dom/extend-expect'
+import Login from '../login/page'
 
 describe('LoginForm Component', () => {
-  test('renders the login form', () => {
-    render(<Login />);
-    
-    expect(screen.getByTestId('h2-signin')).toBeInTheDocument();
-    expect(screen.getByTestId('label-email')).toBeInTheDocument();
-    expect(screen.getByTestId('label-password')).toBeInTheDocument();
-    expect(screen.getByTestId('h1-signin')).toBeInTheDocument();
-  });
+  it('renders the login form', () => {
+    render(<Login />)
 
-  test('allows the user to type in the email and password fields', () => {
-    render(<Login />);
-    
-    const emailInput = screen.getByTestId('email-input') as HTMLInputElement;
-    const passwordInput = screen.getByLabelText('password-input') as HTMLInputElement;
+    expect(screen.getByText('Sign In')).toBeInTheDocument()
+    expect(screen.getByLabelText('Email:')).toBeInTheDocument()
+    expect(screen.getByLabelText('Password:')).toBeInTheDocument()
+    expect(screen.getByRole('login')).toBeInTheDocument()
+  })
 
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+  it('allows the user to type in the email and password fields', () => {
+    render(<Login />)
 
-    expect(emailInput.value).toBe('test@example.com');
-    expect(passwordInput.value).toBe('password123');
-  });
+    const emailInput = screen.getByLabelText('Email:') as HTMLInputElement
+    const passwordInput = screen.getByLabelText('Password:') as HTMLInputElement
 
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
+    fireEvent.change(passwordInput, { target: { value: 'password123' } })
+
+    expect(emailInput.value).toBe('test@example.com')
+    expect(passwordInput.value).toBe('password123')
+  })
 })
