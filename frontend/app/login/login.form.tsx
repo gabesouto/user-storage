@@ -40,15 +40,11 @@ export default function LoginForm() {
           })
         }}
       >
-        <section className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <h2 className="text-center text-2xl font-bold text-gray-900 my-2">
-            Sign In
-          </h2>
-
+        <section className="flex-row gap-3  items-center justify-center flex sm:mx-auto sm:w-full sm:max-w-sm">
           <svg
             width="264px"
             height="48px"
-            className="w-40"
+            className="w-40 self-center"
             viewBox="0 0 176 32"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -104,15 +100,14 @@ export default function LoginForm() {
               ></path>
             </g>
           </svg>
-
+        </section>
+        <section>
           <p className="text-center text-sm text-gray-500">
-            If you do not have an account,
-            <span> </span>
+            New member?
             <button
               type="button"
-              className="mt-2 font-semibold text-gray-600 hover:underline focus:text-gray-800 focus:outline-none"
+              className="mt-2 ml-1 font-semibold text-gray-600 hover:underline focus:text-gray-800 focus:outline-none"
             >
-              {' '}
               Sign up
             </button>
           </p>
