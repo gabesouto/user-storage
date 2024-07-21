@@ -1,9 +1,11 @@
 import React from 'react'
 import { DashboardTable } from './components/dashboard.table'
+import Header from './components/header'
 
 function Dashboard() {
   return (
-    <div className="bg-white h-screen">
+    <div className="bg-purpleGuru h-screen">
+      <Header />
       <DashboardTable />
     </div>
   )

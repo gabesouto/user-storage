@@ -169,18 +169,18 @@ export function DashboardTable() {
   return (
     <section className="container px-4 mx-auto">
       {/* Search Bar */}
-      <div className="mb-4 flex items-center gap-x-4">
+      <div className="mb-4  mt-5 flex items-center gap-x-4">
         <input
           type="text"
           placeholder={`Search by ${searchBy === 'name' ? 'name' : 'email'}`}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-3/4 py-3 border-gray-300 dark:border-gray-700 dark:bg-gray-900 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="w-1/4 py-2 px-2 text-blackGuru border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
         />
         <select
           value={searchBy}
           onChange={(e) => setSearchBy(e.target.value as 'name' | 'email')}
-          className="border-gray-300 dark:border-gray-700 dark:bg-gray-900 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="border-gray-300 text-blackGuru p-2 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
         >
           <option value="name">Name</option>
           <option value="email">Email</option>
@@ -191,27 +191,24 @@ export function DashboardTable() {
       <div className="flex flex-col">
         <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-            <div className="bg-purpleGuru overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg">
+            <div className="bg-slate-50 overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg">
               <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead>
                   <tr>
-                    <th className="py-3 pl-5 text-sm font-bold text-white text-left">
+                    <th className="py-3 pl-5 text-sm font-bold text-blackGuru text-left">
                       ID
                     </th>
-                    <th className="py-3 pl-4 text-sm font-bold text-white text-left">
+                    <th className="py-3 pl-4 text-sm font-bold text-blackGuru text-left">
                       Created At
                     </th>
-                    <th className="px-2 py-3 pl-4 text-sm font-bold text-white text-left">
+                    <th className="px-2 py-3 pl-4 text-sm font-bold text-blackGuru text-left">
                       Phone Number
                     </th>
-                    <th className="px-2 py-3 pl-4 text-sm font-bold text-white text-left">
+                    <th className="px-2 py-3 pl-4 text-sm font-bold text-blackGuru text-left">
                       User
                     </th>
-                    <th className="px-2 py-3 pl-4 text-sm font-bold text-white text-left">
+                    <th className="px-2 py-3 pl-4 text-sm font-bold text-blackGuru text-left">
                       Updated At
-                    </th>
-                    <th className="relative px-4 py-3 text-sm font-bold text-white text-left">
-                      <span className="sr-only">Actions</span>
                     </th>
                   </tr>
                 </thead>
@@ -249,7 +246,7 @@ export function DashboardTable() {
                       <td className="relative px-4 py-4 text-right text-sm font-medium whitespace-nowrap">
                         <button
                           onClick={() => handleEditClick(user.id)}
-                          className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+                          className="text-purpleGuru hover:text-indigo-900"
                         >
                           Edit
                         </button>
@@ -286,7 +283,41 @@ export function DashboardTable() {
       </div>
 
       {/* Add User Button */}
-      <div className="flex justify-end mt-4">
+      <div className="flex justify-between mt-4">
+        {page > 1 && (
+          <button
+            onClick={() => {
+              const prevPage = page - 1
+              fetchUsers(prevPage)
+              setPage(prevPage)
+            }}
+            className="flex items-center px-4 border border-transparent shadow-sm text-sm font-bold rounded-md text-blackGuru bg-white hover:bg-blackGuruDark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blackGuru"
+          >
+            Voltar
+          </button>
+        )}
+        {hasMorePages && (
+          <button
+            onClick={() => {
+              const nextPage = page + 1
+              fetchUsers(nextPage)
+              setPage(nextPage)
+            }}
+            className="flex items-center px-4 py-1 border border-transparent shadow-sm text-sm font-bold rounded-md text-blackGuru bg-white hover:bg-blackGuruDark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blackGuru"
+          >
+            Página {page}, Carregar mais
+            <span
+              style={{
+                display: 'inline-block',
+                marginLeft: '4px',
+                fontSize: '1.2em',
+              }}
+              className="text-blackGuru"
+            >
+              ↓
+            </span>
+          </button>
+        )}
         <button
           onClick={() => setIsAdding(true)}
           className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
@@ -294,7 +325,6 @@ export function DashboardTable() {
           Add User
         </button>
       </div>
-
       {/* Edit Form */}
       {isEditing && (
         <EditUserForm
@@ -325,42 +355,7 @@ export function DashboardTable() {
       )}
 
       {/* Pagination Controls */}
-      <div className="flex justify-between mt-4">
-        {page > 1 && (
-          <button
-            onClick={() => {
-              const prevPage = page - 1
-              fetchUsers(prevPage)
-              setPage(prevPage)
-            }}
-            className="flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blackGuru hover:bg-blackGuruDark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blackGuru"
-          >
-            Voltar
-          </button>
-        )}
-        {hasMorePages && (
-          <button
-            onClick={() => {
-              const nextPage = page + 1
-              fetchUsers(nextPage)
-              setPage(nextPage)
-            }}
-            className="flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blackGuru hover:bg-blackGuruDark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blackGuru"
-          >
-            Página {page}, Carregar mais
-            <span
-              style={{
-                display: 'inline-block',
-                marginLeft: '4px',
-                fontSize: '1.2em',
-              }}
-              className="text-blackGuru"
-            >
-              ↓
-            </span>
-          </button>
-        )}
-      </div>
+      <div className="flex justify-between "></div>
     </section>
   )
 }
