@@ -69,8 +69,26 @@ function update({
     })
 }
 
+interface dashboardControllerDeleteParams {
+  userId: string
+  onError: () => void
+  onSuccess: (userId: string) => void
+}
+
+function deleteUser({
+  userId,
+  onError,
+  onSuccess,
+}: dashboardControllerDeleteParams) {
+  dashboardRepository
+    .deleteUser(userId)
+    .then(() => onSuccess(userId))
+    .catch(() => onError())
+}
+
 export const dashboardController = {
   get,
   create,
   update,
+  deleteUser,
 }

@@ -4,7 +4,7 @@ import { dashboardController } from '@/app/controller/dashboard.controller'
 import React, { useEffect, useRef, useState } from 'react'
 import EditUserForm from './editing-user.form'
 import AddUserForm from './adding-user.form'
-// import { enqueueSnackbar } from 'notistack'
+import DeleteUserConfirmation from './user-delete.modal'
 
 export interface HomeUser {
   id: string
@@ -19,6 +19,7 @@ type HomeUsers = HomeUser[]
 
 export function DashboardTable() {
   const [isEditing, setIsEditing] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   const [isAdding, setIsAdding] = useState(false)
   const [totalPages, setTotalPages] = useState(0)
   const [page, setPage] = useState(1)
@@ -39,6 +40,7 @@ export function DashboardTable() {
   const [homeUsers, setHomeUsers] = useState<HomeUsers>([])
   const [loading, setLoading] = useState(true)
   const [updateUserId, setUpdateUserId] = useState('')
+  const [deleteUserId, setDeleteUserId] = useState('')
   const initialLoadComplete = useRef(false)
 
   const handleEditClick = (id: string) => {
@@ -54,6 +56,11 @@ export function DashboardTable() {
     }
   }
 
+  const handleDeleteClick = (userId: string) => {
+    setDeleteUserId(userId)
+    setIsDeleting(true)
+  }
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setEditData((prevData) => ({ ...prevData, [name]: value }))
@@ -65,14 +72,9 @@ export function DashboardTable() {
   }
 
   const handleAddUser = () => {
-    console.log('Adding user:', newUser)
     dashboardController.create({
       user: newUser,
       onSuccess(user) {
-        // enqueueSnackbar('Usuário adicionado com sucesso!', {
-        //   variant: 'success',
-        // })
-
         setHomeUsers((oldUsers) => [user, ...oldUsers])
         setIsAdding(false)
         setNewUser({
@@ -84,11 +86,26 @@ export function DashboardTable() {
         })
       },
       onError() {
-        // enqueueSnackbar('Falha ao adicionar o usuário.', {
-        //   variant: 'error',
-        // })
+        console.error('Failed to add user')
       },
     })
+  }
+
+  const handleDeleteUser = (userId: string) => {
+    dashboardController.deleteUser({
+      userId,
+      onSuccess() {
+        fetchUsers(page)
+        setIsDeleting(false)
+      },
+      onError() {
+        console.error('Failed to delete user')
+      },
+    })
+  }
+
+  const handleCancelDeleteUser = () => {
+    setIsDeleting(false)
   }
 
   const handleEditUser = async (id: string) => {
@@ -103,14 +120,13 @@ export function DashboardTable() {
             fullName: '',
             phoneNumber: '',
           })
-          console.log('updated')
         },
         onError: () => {
-          console.log('failed to update')
+          console.error('Failed to update user')
         },
       })
     } catch (error) {
-      console.log('failed to update')
+      console.error('Failed to update user')
     }
   }
 
@@ -130,8 +146,6 @@ export function DashboardTable() {
     setLoading(true)
     try {
       const result = await dashboardController.get({ page: pageNumber })
-      console.log(result)
-
       setHomeUsers(result.users)
       setTotalPages(result.page as number)
     } catch (err) {
@@ -151,6 +165,7 @@ export function DashboardTable() {
 
   const hasMorePages = totalPages > page
   const hasNoUsers = homeUsers.length === 0 && !loading
+
   return (
     <section className="container px-4 mx-auto">
       {/* Search Bar */}
@@ -201,8 +216,8 @@ export function DashboardTable() {
                   </tr>
                 </thead>
                 <tbody className="bg-slate-50 divide-y divide-gray-200 dark:divide-gray-700">
-                  {filteredUsers.map((user, index) => (
-                    <tr key={index}>
+                  {filteredUsers.map((user) => (
+                    <tr key={user.id}>
                       <td className="px-4 py-4 text-sm font-medium text-blackGuru whitespace-nowrap">
                         {user.id.substring(0, 4)}
                       </td>
@@ -237,6 +252,14 @@ export function DashboardTable() {
                           className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
                         >
                           Edit
+                        </button>
+                      </td>
+                      <td className="relative px-4 py-4 text-right text-sm font-medium whitespace-nowrap">
+                        <button
+                          onClick={() => handleDeleteClick(user.id)}
+                          className="text-red-500 hover:text-red-600 hover:font-bold"
+                        >
+                          Delete
                         </button>
                       </td>
                     </tr>
@@ -288,10 +311,16 @@ export function DashboardTable() {
           editData={newUser}
           handleChange={handleNewUserChange}
           setIsAdding={setIsAdding}
-          handleSubmit={() => {
-            console.log('Submit clicked for new user')
-            handleAddUser()
-          }}
+          handleSubmit={handleAddUser}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleting && (
+        <DeleteUserConfirmation
+          userId={deleteUserId}
+          onConfirm={() => handleDeleteUser(deleteUserId)}
+          onCancel={handleCancelDeleteUser}
         />
       )}
 

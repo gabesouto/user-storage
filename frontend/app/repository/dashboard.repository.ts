@@ -141,4 +141,12 @@ async function update(
   }
 }
 
-export const dashboardRepository = { get, create, update }
+async function deleteUser(userId: string): Promise<void> {
+  try {
+    await api.delete(`/users/${userId}`)
+  } catch (error) {
+    console.error('Failed to delete user:', error)
+  }
+}
+
+export const dashboardRepository = { get, create, update, deleteUser }
