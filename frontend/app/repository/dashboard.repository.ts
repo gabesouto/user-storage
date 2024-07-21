@@ -1,5 +1,9 @@
 import axios from 'axios'
-import { UserParams, UserSchemaResponse } from '../schema/user.schema'
+import {
+  UserParams,
+  UserSchemaResponse,
+  UserUpdateParams,
+} from '../schema/user.schema'
 import { z as schema } from 'zod'
 
 export const api = axios.create({
@@ -30,7 +34,7 @@ export interface UserResponse {
   id: string
   fullName: string
   email: string
-  age: string
+  age: number
   phoneNumber: string
   updatedAt: Date
   createdAt: Date
@@ -60,7 +64,6 @@ async function get({
   limit,
 }: UserRespositoryGetParams): Promise<UserRespositoryGetOutputParams> {
   const response = await fetchUsers({ page, limit })
-  console.log('response', response)
 
   return {
     users: response.data,
@@ -68,7 +71,6 @@ async function get({
     page: response.pages,
   }
 }
-
 async function create({
   email,
   password,
@@ -89,9 +91,18 @@ async function create({
       user: UserSchemaResponse,
     })
 
-    const serverResponseParsed = ServerResponseSchema.safeParse(data)
+    const preprocessedData = {
+      ...data.data,
+      createdAt: new Date(data.data.createdAt),
+      updatedAt: new Date(data.data.updatedAt),
+    }
+
+    const serverResponseParsed = ServerResponseSchema.safeParse({
+      user: preprocessedData,
+    })
 
     if (!serverResponseParsed.success) {
+      console.error('Parsing errors:', serverResponseParsed.error.format())
       throw new Error('Failed to parse server response')
     }
 
@@ -102,4 +113,32 @@ async function create({
   }
 }
 
-export const dashboardRepository = { get, create }
+async function update(
+  userId: string,
+  userToUpdate: UserUpdateParams,
+): Promise<UserResponse> {
+  try {
+    const { data } = await api.put(`users/${userId}`, {
+      email: userToUpdate.email,
+      fullName: userToUpdate.fullName,
+      phoneNumber: userToUpdate.phoneNumber,
+    })
+
+    const ServerResponseSchema = schema.object({
+      user: UserSchemaResponse,
+    })
+
+    const serverResponseParsed = ServerResponseSchema.safeParse(data)
+
+    if (!serverResponseParsed.success) {
+      throw new Error(`Failed to update user with id ${userId}`)
+    }
+
+    return serverResponseParsed.data.user
+  } catch (error) {
+    console.error('Failed to update user:', error)
+    throw new Error('Failed to update user')
+  }
+}
+
+export const dashboardRepository = { get, create, update }

@@ -2,7 +2,7 @@ import {
   dashboardRepository,
   UserResponse,
 } from '../repository/dashboard.repository'
-import { UserSchema } from '../schema/user.schema'
+import { UserSchema, UserUpdateParams } from '../schema/user.schema'
 
 interface TodoControllerGetParams {
   page?: number
@@ -34,7 +34,6 @@ function create({ user, onError, onSuccess }: dashboardControllerCreateParams) {
 
   if (!parsedContentParam.success) {
     onError()
-    console.log('falha')
 
     return
   }
@@ -48,7 +47,30 @@ function create({ user, onError, onSuccess }: dashboardControllerCreateParams) {
     })
 }
 
+interface UserCreateControllerParams {
+  id: string
+  updateUserOnScreen: () => void
+  onError: () => void
+  userToUpdate: UserUpdateParams
+}
+function update({
+  id,
+  updateUserOnScreen,
+  onError,
+  userToUpdate,
+}: UserCreateControllerParams) {
+  dashboardRepository
+    .update(id, userToUpdate)
+    .then(() => {
+      updateUserOnScreen()
+    })
+    .catch(() => {
+      onError()
+    })
+}
+
 export const dashboardController = {
   get,
   create,
+  update,
 }

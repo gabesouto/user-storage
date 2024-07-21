@@ -4,6 +4,7 @@ import { dashboardController } from '@/app/controller/dashboard.controller'
 import React, { useEffect, useRef, useState } from 'react'
 import EditUserForm from './editing-user.form'
 import AddUserForm from './adding-user.form'
+// import { enqueueSnackbar } from 'notistack'
 
 export interface HomeUser {
   id: string
@@ -37,9 +38,21 @@ export function DashboardTable() {
   const [searchBy, setSearchBy] = useState<'name' | 'email'>('name')
   const [homeUsers, setHomeUsers] = useState<HomeUsers>([])
   const [loading, setLoading] = useState(true)
+  const [updateUserId, setUpdateUserId] = useState('')
   const initialLoadComplete = useRef(false)
 
-  const handleEditClick = () => setIsEditing(true)
+  const handleEditClick = (id: string) => {
+    const user = homeUsers.find((user) => user.id === id)
+    if (user) {
+      setEditData({
+        phoneNumber: user.phoneNumber,
+        fullName: user.fullName,
+        email: user.email,
+      })
+      setIsEditing(true)
+      setUpdateUserId(id)
+    }
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -78,25 +91,27 @@ export function DashboardTable() {
     })
   }
 
-  const handleEditUser = async () => {
-    // try {
-    //   await dashboardController.update({
-    //     user: editData,
-    //   })
-    //   setIsEditing(false)
-    //   setEditData({
-    //     email: '',
-    //     fullName: '',
-    //     phoneNumber: '',
-    //   })
-    //   enqueueSnackbar('Usuário atualizado com sucesso!', {
-    //     variant: 'success',
-    //   })
-    // } catch (error) {
-    //   enqueueSnackbar('Falha ao atualizar o usuário.', {
-    //     variant: 'error',
-    //   })
-    // }
+  const handleEditUser = async (id: string) => {
+    try {
+      await dashboardController.update({
+        id,
+        userToUpdate: editData,
+        updateUserOnScreen: () => {
+          setIsEditing(false)
+          setEditData({
+            email: '',
+            fullName: '',
+            phoneNumber: '',
+          })
+          console.log('updated')
+        },
+        onError: () => {
+          console.log('failed to update')
+        },
+      })
+    } catch (error) {
+      console.log('failed to update')
+    }
   }
 
   useEffect(() => {
@@ -136,7 +151,6 @@ export function DashboardTable() {
 
   const hasMorePages = totalPages > page
   const hasNoUsers = homeUsers.length === 0 && !loading
-
   return (
     <section className="container px-4 mx-auto">
       {/* Search Bar */}
@@ -219,7 +233,7 @@ export function DashboardTable() {
                       </td>
                       <td className="relative px-4 py-4 text-right text-sm font-medium whitespace-nowrap">
                         <button
-                          onClick={handleEditClick}
+                          onClick={() => handleEditClick(user.id)}
                           className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
                         >
                           Edit
@@ -264,7 +278,7 @@ export function DashboardTable() {
           editData={editData}
           handleChange={handleChange}
           setIsEditing={setIsEditing}
-          handleSubmit={handleEditUser}
+          handleSubmit={() => handleEditUser(updateUserId)}
         />
       )}
 
