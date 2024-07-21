@@ -5,6 +5,7 @@ interface AddUserProps {
     fullName: string
     password: string
     phoneNumber: string
+    age: string
     email: string
   }
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -31,6 +32,18 @@ const AddUserForm: React.FC<AddUserProps> = ({
               type="text"
               name="phoneNumber"
               value={editData.phoneNumber}
+              onChange={handleChange}
+              className="mt-1 block w-3/4 py-1 px-4 border-gray-300 rounded-md shadow-sm focus:border-transparent focus:ring-indigo-500 sm:text-sm text-black"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-400">
+              Age
+            </label>
+            <input
+              type="text"
+              name="age"
+              value={editData.age}
               onChange={handleChange}
               className="mt-1 block w-3/4 py-1 px-4 border-gray-300 rounded-md shadow-sm focus:border-transparent focus:ring-indigo-500 sm:text-sm text-black"
             />
