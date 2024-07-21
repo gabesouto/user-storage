@@ -29,11 +29,7 @@ export class AuthService {
     pass: string
   }): Promise<{ access_token: string }> {
     const staffMember = await this.validateUser(email, pass)
-    const payload = {
-      sub: staffMember.id,
-      role: staffMember.role,
-      email: staffMember.email,
-    }
+    const payload = { sub: staffMember.id }
 
     return { access_token: await this.jwtService.signAsync(payload) }
   }
