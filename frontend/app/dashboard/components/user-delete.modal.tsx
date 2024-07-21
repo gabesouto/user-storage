@@ -12,10 +12,12 @@ const DeleteUserConfirmation: React.FC<DeleteUserConfirmationProps> = ({
   onCancel,
 }) => {
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-md shadow-lg dark:bg-gray-800">
-        <h3 className="text-lg font-semibold mb-4">Confirm Delete</h3>
-        <p className="mb-4 text-gray-700 dark:text-gray-400">
+    <div className="fixed inset-0 bg-purpleGuru bg-opacity-50 flex justify-center items-center z-50">
+      <div className="bg-white p-6 rounded-md shadow-lg">
+        <h3 className="text-lg text-blackGuru font-semibold mb-4">
+          Confirm Delete
+        </h3>
+        <p className="mb-4 text-blackGuru ">
           Are you sure you want to delete the user <strong>{userId}</strong>?
           This action cannot be undone.
         </p>
