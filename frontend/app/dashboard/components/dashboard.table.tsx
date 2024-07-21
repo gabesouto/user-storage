@@ -1,7 +1,7 @@
 'use client'
 
 import { dashboardController } from '@/app/controller/dashboard.controller'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import EditUserForm from './editing-user.form'
 import AddUserForm from './adding-user.form'
 
@@ -19,44 +19,36 @@ type HomeUsers = HomeUser[]
 export function DashboardTable() {
   const [isEditing, setIsEditing] = useState(false)
   const [isAdding, setIsAdding] = useState(false)
+  const [totalPages, setTotalPages] = useState(0)
+  const [page, setPage] = useState(1)
   const [editData, setEditData] = useState({
     phoneNumber: '',
     fullName: '',
     email: '',
   })
-
   const [newUser, setNewUser] = useState({
     email: '',
     fullName: '',
     password: '',
     phoneNumber: '',
   })
-
   const [searchTerm, setSearchTerm] = useState('')
   const [searchBy, setSearchBy] = useState<'name' | 'email'>('name')
+  const [homeUsers, setHomeUsers] = useState<HomeUsers>([])
+  const [loading, setLoading] = useState(true)
+  const initialLoadComplete = useRef(false)
 
-  const handleEditClick = () => {
-    setIsEditing(true)
-  }
-
-  const handleAddClick = () => {
-    setIsAdding(true)
-  }
+  const handleEditClick = () => setIsEditing(true)
+  const handleAddClick = () => setIsAdding(true)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    setEditData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }))
+    setEditData((prevData) => ({ ...prevData, [name]: value }))
   }
 
   const handleNewUserChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    setNewUser((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }))
+    setNewUser((prevData) => ({ ...prevData, [name]: value }))
   }
 
   const handleAddUser = () => {
@@ -69,7 +61,7 @@ export function DashboardTable() {
     })
   }
 
-  const handlEditUser = () => {
+  const handleEditUser = () => {
     setIsEditing(false)
     setEditData({
       email: '',
@@ -78,33 +70,41 @@ export function DashboardTable() {
     })
   }
 
-  const [homeUsers, setHomeUsers] = useState<HomeUsers>([])
-  const [loading, setLoading] = useState(true)
-
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const result = await dashboardController.get({ page: 1 })
-        setHomeUsers(result.data)
-      } catch (err) {
-        throw new Error('failed to fetch users')
-      } finally {
-        setLoading(false)
-      }
+    if (!initialLoadComplete.current) {
+      fetchUsers(1)
     }
-
-    fetchData()
   }, [])
 
-  if (loading) return <p>Loading...</p>
+  useEffect(() => {
+    if (initialLoadComplete.current) {
+      fetchUsers(page)
+    }
+  }, [page])
+
+  const fetchUsers = async (pageNumber: number) => {
+    setLoading(true)
+    try {
+      const result = await dashboardController.get({ page: pageNumber })
+      setHomeUsers(result.users)
+      setTotalPages(result.page as number)
+    } catch (err) {
+      console.error('Failed to fetch users', err)
+    } finally {
+      setLoading(false)
+      initialLoadComplete.current = true
+    }
+  }
 
   const filteredUsers = homeUsers.filter((user) => {
-    if (searchBy === 'name') {
-      return user.fullName.toLowerCase().includes(searchTerm.toLowerCase())
-    } else {
-      return user.email.toLowerCase().includes(searchTerm.toLowerCase())
-    }
+    const searchTermLower = searchTerm.toLowerCase()
+    return searchBy === 'name'
+      ? user.fullName.toLowerCase().includes(searchTermLower)
+      : user.email.toLowerCase().includes(searchTermLower)
   })
+
+  const hasMorePages = totalPages > page
+  const hasNoUsers = homeUsers.length === 0 && !loading
 
   return (
     <section className="container px-4 mx-auto">
@@ -127,62 +127,45 @@ export function DashboardTable() {
         </select>
       </div>
 
+      {/* Table */}
       <div className="flex flex-col">
         <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
             <div className="bg-purpleGuru overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg">
               <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="">
+                <thead>
                   <tr>
-                    <th
-                      scope="col"
-                      className="py-3 pl-5 ml-2 text-sm font-bold text-white text-left"
-                    >
+                    <th className="py-3 pl-5 text-sm font-bold text-white text-left">
                       ID
                     </th>
-                    <th
-                      scope="col"
-                      className="py-3 pl-4 ml-2 text-sm font-bold text-white text-left"
-                    >
+                    <th className="py-3 pl-4 text-sm font-bold text-white text-left">
                       Created At
                     </th>
-                    <th
-                      scope="col"
-                      className="px-2 py-3 pl-4 text-sm font-bold text-white text-left"
-                    >
+                    <th className="px-2 py-3 pl-4 text-sm font-bold text-white text-left">
                       Phone Number
                     </th>
-                    <th
-                      scope="col"
-                      className="px-2 py-3 pl-4  text-sm font-bold text-white text-left"
-                    >
+                    <th className="px-2 py-3 pl-4 text-sm font-bold text-white text-left">
                       User
                     </th>
-                    <th
-                      scope="col"
-                      className="px-2 py-3 pl-4 text-sm font-bold text-white text-left"
-                    >
+                    <th className="px-2 py-3 pl-4 text-sm font-bold text-white text-left">
                       Updated At
                     </th>
-                    <th
-                      scope="col"
-                      className="relative px-4 py-3 pl-2 text-sm font-bold text-white text-left"
-                    >
+                    <th className="relative px-4 py-3 text-sm font-bold text-white text-left">
                       <span className="sr-only">Actions</span>
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-grayGuru divide-y divide-gray-200 dark:divide-gray-700 ">
+                <tbody className="bg-slate-50 divide-y divide-gray-200 dark:divide-gray-700">
                   {filteredUsers.map((user, index) => (
                     <tr key={index}>
-                      <td className="px-4 py-4 text-sm font-medium text-blackGuru whitespace-nowrap ">
+                      <td className="px-4 py-4 text-sm font-medium text-blackGuru whitespace-nowrap">
                         {user.id.substring(0, 4)}
                       </td>
-                      <td className="px-4 py-4 text-sm  font-medium text-blackGuru whitespace-nowrap">
+                      <td className="px-4 py-4 text-sm font-medium text-blackGuru whitespace-nowrap">
                         {new Date(user.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-4 py-4 text-sm font-medium text-blackGuru whitespace-nowrap">
-                        <div className="inline-flex items-center px-3 py-1 rounded-full gap-x-2  text-blackGuru">
+                        <div className="inline-flex items-center px-3 py-1 rounded-full gap-x-2 text-blackGuru">
                           <h2 className="text-sm font-medium">
                             {user.phoneNumber}
                           </h2>
@@ -200,7 +183,7 @@ export function DashboardTable() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-4 text-sm  font-medium text-blackGuru whitespace-nowrap">
+                      <td className="px-4 py-4 text-sm font-medium text-blackGuru whitespace-nowrap">
                         {new Date(user.updatedAt).toLocaleDateString()}
                       </td>
                       <td className="relative px-4 py-4 text-right text-sm font-medium whitespace-nowrap">
@@ -213,19 +196,35 @@ export function DashboardTable() {
                       </td>
                     </tr>
                   ))}
+                  {loading && (
+                    <tr>
+                      <td colSpan={6} className="text-center py-4">
+                        Carregando...
+                      </td>
+                    </tr>
+                  )}
+                  {hasNoUsers && (
+                    <tr>
+                      <td colSpan={6} className="text-center py-4 text-black">
+                        Nenhum item encontrado
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
         </div>
-        <div className="flex justify-end mt-4">
-          <button
-            onClick={handleAddClick}
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-          >
-            Add User
-          </button>
-        </div>
+      </div>
+
+      {/* Add User Button */}
+      <div className="flex justify-end mt-4">
+        <button
+          onClick={handleAddClick}
+          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+        >
+          Add User
+        </button>
       </div>
 
       {/* Edit Form */}
@@ -234,10 +233,11 @@ export function DashboardTable() {
           editData={editData}
           handleChange={handleChange}
           setIsEditing={setIsEditing}
-          handleSubmit={handlEditUser}
+          handleSubmit={handleEditUser}
         />
       )}
 
+      {/* Add User Form */}
       {isAdding && (
         <AddUserForm
           editData={newUser}
@@ -247,7 +247,43 @@ export function DashboardTable() {
         />
       )}
 
-      {/* Add Form */}
+      {/* Pagination Controls */}
+      <div className="flex justify-between mt-4">
+        {page > 1 && (
+          <button
+            onClick={() => {
+              const prevPage = page - 1
+              fetchUsers(prevPage)
+              setPage(prevPage)
+            }}
+            className="flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blackGuru hover:bg-blackGuruDark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blackGuru"
+          >
+            Voltar
+          </button>
+        )}
+        {hasMorePages && (
+          <button
+            onClick={() => {
+              const nextPage = page + 1
+              fetchUsers(nextPage)
+              setPage(nextPage)
+            }}
+            className="flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blackGuru hover:bg-blackGuruDark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blackGuru"
+          >
+            Página {page}, Carregar mais
+            <span
+              style={{
+                display: 'inline-block',
+                marginLeft: '4px',
+                fontSize: '1.2em',
+              }}
+              className="text-blackGuru"
+            >
+              ↓
+            </span>
+          </button>
+        )}
+      </div>
     </section>
   )
 }

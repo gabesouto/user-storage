@@ -88,10 +88,11 @@ export class UserService {
   async findAll(
     page: number,
     limit: number,
-    filter: string,
-  ): Promise<{ data: ResponseUserDto[] }> {
+    filter?: string, // Tornar o filtro opcional
+  ): Promise<{ data: ResponseUserDto[]; total: number; pages: number }> {
     const startIndex = (page - 1) * limit
     const endIndex = startIndex + limit
+
     if (filter) {
       const [field, value] = filter.split(':')
 
@@ -103,7 +104,7 @@ export class UserService {
         },
       })
 
-      if (!usersByFilter) {
+      if (!usersByFilter || usersByFilter.length === 0) {
         throw new NotFoundException('No users found for the given filter')
       }
 
@@ -111,22 +112,41 @@ export class UserService {
         this.excludeService.exclude(user, ['password']),
       )
 
-      return { data: usersWithoutPasswords }
+      const total = usersByFilter.length
+      const totalPages = Math.ceil(total / limit)
+
+      // Paginate the filtered results
+      const paginatedUsers = usersWithoutPasswords.slice(startIndex, endIndex)
+
+      return {
+        data: paginatedUsers,
+        total,
+        pages: totalPages,
+      }
     }
 
+    // If no filter is applied
     const users = await this.prisma.user.findMany({
       skip: startIndex,
-      take: endIndex,
+      take: limit,
     })
 
     if (users.length === 0) {
       throw new NotFoundException('No users found for the given page and limit')
     }
+
+    const total = await this.prisma.user.count() // Get the total number of users
     const usersWithoutPasswords = users.map((user) =>
       this.excludeService.exclude(user, ['password']),
     )
 
-    return { data: usersWithoutPasswords }
+    const totalPages = Math.ceil(total / limit)
+
+    return {
+      data: usersWithoutPasswords,
+      total,
+      pages: totalPages,
+    }
   }
 
   async findOne(id: string): Promise<IUser> {

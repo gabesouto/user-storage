@@ -3,8 +3,10 @@
 import { useState } from 'react'
 import { loginController } from '../controller/login.controller'
 import { api } from '../repository/login.repository'
+import { useRouter } from 'next/navigation'
 
 export default function LoginForm() {
+  const { push } = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   //  }
@@ -32,7 +34,7 @@ export default function LoginForm() {
             onSuccess: (accessToken: string) => {
               setToken(accessToken)
               saveTokenToLocalStorage(accessToken)
-              console.log('Token de acesso:', accessToken)
+              push('/dashboard')
             },
           }
           loginController.post(payload).then(() => {

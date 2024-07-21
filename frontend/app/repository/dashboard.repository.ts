@@ -18,11 +18,12 @@ export interface UserResponse {
   createdAt: Date
 }
 
-// interface UserRespositoryGetOutputParams {
-//   users: UserParams[]
-//   page?: number
-//   limit?: number
-// }
+interface UserRespositoryGetOutputParams {
+  users: UserResponse[]
+  page?: number
+  total?: number
+}
+
 async function fetchUsers({ page, limit }: UserRespositoryGetParams) {
   try {
     const response = await api.get(`users?page=${page}&&limit=${limit}`)
@@ -40,15 +41,14 @@ async function fetchUsers({ page, limit }: UserRespositoryGetParams) {
 async function get({
   page,
   limit,
-}: UserRespositoryGetParams): Promise<{ data: UserResponse[] }> {
+}: UserRespositoryGetParams): Promise<UserRespositoryGetOutputParams> {
   const response = await fetchUsers({ page, limit })
 
-  return response
-  //   return {
-  //     users: response.users,
-  //     total: response.total,
-  //     pages: response.pages,
-  //   }
+  return {
+    users: response.data,
+    total: response.total,
+    page: response.pages,
+  }
 }
 
 export const dashboardRepository = { get }
