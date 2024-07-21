@@ -8,7 +8,6 @@ export class RoleGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest()
-    console.log(request.user)
 
     if (request?.user) {
       const { id } = request.user

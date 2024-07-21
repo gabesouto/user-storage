@@ -3,8 +3,11 @@
 import { useState } from 'react'
 import { loginController } from '../controller/login.controller'
 import { api } from '../repository/login.repository'
+import { useRouter } from 'next/navigation'
+import { setCookie } from 'nookies'
 
 export default function LoginForm() {
+  const { push } = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   //  }
@@ -32,7 +35,9 @@ export default function LoginForm() {
             onSuccess: (accessToken: string) => {
               setToken(accessToken)
               saveTokenToLocalStorage(accessToken)
-              console.log('Token de acesso:', accessToken)
+              push('/dashboard')
+
+              setCookie(undefined, 'token', accessToken)
             },
           }
           loginController.post(payload).then(() => {

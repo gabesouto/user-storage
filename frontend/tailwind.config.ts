@@ -15,6 +15,8 @@ const config: Config = {
       },
       colors: {
         purpleGuru: '#7c14c4',
+        grayGuru: '#f1f1f1',
+        blackGuru: '#111827',
       },
     },
   },
