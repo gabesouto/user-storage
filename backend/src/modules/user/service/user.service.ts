@@ -62,12 +62,16 @@ export class UserService {
     updateUser: UpdateUserDto,
   ): Promise<{ data: ResponseUserDto }> {
     try {
-      const userUpdated = await this.prisma.user.update({
+      const { age } = await this.prisma.user.findUnique({
         where: { id },
-        data: { ...updateUser, updatedAt: new Date() },
       })
 
-      const userWithoutPassword = this.excludeService.exclude(userUpdated, [
+      const updatedUser = await this.prisma.user.update({
+        where: { id },
+        data: { ...updateUser, age, id, updatedAt: new Date() },
+      })
+
+      const userWithoutPassword = this.excludeService.exclude(updatedUser, [
         'password',
       ])
 
@@ -103,7 +107,7 @@ export class UserService {
         where: {
           [field]: parsedValue,
         },
-        orderBy: { createdAt: 'desc' }, // Adiciona a ordenação aqui
+        orderBy: { updatedAt: 'desc' }, // Adiciona a ordenação aqui
       })
 
       if (!usersByFilter || usersByFilter.length === 0) {
@@ -131,7 +135,7 @@ export class UserService {
     const users = await this.prisma.user.findMany({
       skip: startIndex,
       take: limit,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { updatedAt: 'desc' },
     })
 
     if (users.length === 0) {
