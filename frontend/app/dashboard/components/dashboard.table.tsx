@@ -28,6 +28,7 @@ export function DashboardTable() {
   })
   const [newUser, setNewUser] = useState({
     email: '',
+    age: '',
     fullName: '',
     password: '',
     phoneNumber: '',
@@ -39,7 +40,6 @@ export function DashboardTable() {
   const initialLoadComplete = useRef(false)
 
   const handleEditClick = () => setIsEditing(true)
-  const handleAddClick = () => setIsAdding(true)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -52,22 +52,51 @@ export function DashboardTable() {
   }
 
   const handleAddUser = () => {
-    setIsAdding(false)
-    setNewUser({
-      email: '',
-      fullName: '',
-      password: '',
-      phoneNumber: '',
+    console.log('Adding user:', newUser)
+    dashboardController.create({
+      user: newUser,
+      onSuccess(user) {
+        // enqueueSnackbar('Usuário adicionado com sucesso!', {
+        //   variant: 'success',
+        // })
+
+        setHomeUsers((oldUsers) => [user, ...oldUsers])
+        setIsAdding(false)
+        setNewUser({
+          email: '',
+          age: '',
+          fullName: '',
+          password: '',
+          phoneNumber: '',
+        })
+      },
+      onError() {
+        // enqueueSnackbar('Falha ao adicionar o usuário.', {
+        //   variant: 'error',
+        // })
+      },
     })
   }
 
-  const handleEditUser = () => {
-    setIsEditing(false)
-    setEditData({
-      email: '',
-      fullName: '',
-      phoneNumber: '',
-    })
+  const handleEditUser = async () => {
+    // try {
+    //   await dashboardController.update({
+    //     user: editData,
+    //   })
+    //   setIsEditing(false)
+    //   setEditData({
+    //     email: '',
+    //     fullName: '',
+    //     phoneNumber: '',
+    //   })
+    //   enqueueSnackbar('Usuário atualizado com sucesso!', {
+    //     variant: 'success',
+    //   })
+    // } catch (error) {
+    //   enqueueSnackbar('Falha ao atualizar o usuário.', {
+    //     variant: 'error',
+    //   })
+    // }
   }
 
   useEffect(() => {
@@ -86,6 +115,8 @@ export function DashboardTable() {
     setLoading(true)
     try {
       const result = await dashboardController.get({ page: pageNumber })
+      console.log(result)
+
       setHomeUsers(result.users)
       setTotalPages(result.page as number)
     } catch (err) {
@@ -220,7 +251,7 @@ export function DashboardTable() {
       {/* Add User Button */}
       <div className="flex justify-end mt-4">
         <button
-          onClick={handleAddClick}
+          onClick={() => setIsAdding(true)}
           className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
         >
           Add User
@@ -243,7 +274,10 @@ export function DashboardTable() {
           editData={newUser}
           handleChange={handleNewUserChange}
           setIsAdding={setIsAdding}
-          handleSubmit={handleAddUser}
+          handleSubmit={() => {
+            console.log('Submit clicked for new user')
+            handleAddUser()
+          }}
         />
       )}
 
