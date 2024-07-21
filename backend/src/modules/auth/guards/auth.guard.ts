@@ -27,7 +27,6 @@ export class AuthGuard implements CanActivate {
       })
       const user = await this.staffService.findOne(payload.sub)
       request.user = user
-      console.log('user', request.user)
     } catch {
       throw new UnauthorizedException()
     }
