@@ -7,11 +7,11 @@ import {
   validateAge,
   validateFullName,
 } from '../input-validations'
-
-import { SignupParams } from '../schema/signup.schema'
 import { SignupController } from '../controller/signup.controller'
+import { useRouter } from 'next/navigation'
 
 export default function SignupForm() {
+  const { push } = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [fullName, setFullname] = useState('')
@@ -35,8 +35,8 @@ export default function SignupForm() {
       onError: () => {
         console.log('Erro no signup')
       },
-      onSuccess: (request: SignupParams) => {
-        console.log('Token de acesso:', request)
+      onSuccess: () => {
+        push('/login')
       },
     }
     SignupController.post(request)

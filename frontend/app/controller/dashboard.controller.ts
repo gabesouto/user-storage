@@ -56,17 +56,12 @@ interface UserCreateControllerParams {
 function update({
   id,
   updateUserOnScreen,
-  onError,
+
   userToUpdate,
 }: UserCreateControllerParams) {
-  dashboardRepository
-    .update(id, userToUpdate)
-    .then(() => {
-      updateUserOnScreen()
-    })
-    .catch(() => {
-      onError()
-    })
+  dashboardRepository.update(id, userToUpdate).then(() => {
+    updateUserOnScreen()
+  })
 }
 
 interface dashboardControllerDeleteParams {

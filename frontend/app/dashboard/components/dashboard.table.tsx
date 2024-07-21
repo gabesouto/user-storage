@@ -8,7 +8,6 @@ import DeleteUserConfirmation from './user-delete.modal'
 import { jwtDecode, JwtPayload } from 'jwt-decode'
 import nookies from 'nookies'
 import { useRouter } from 'next/navigation'
-import { useSnackbar } from 'notistack'
 
 export interface HomeUser {
   id: string
@@ -26,7 +25,6 @@ interface CustomJwtPayload extends JwtPayload {
 }
 
 export function DashboardTable() {
-  const { enqueueSnackbar } = useSnackbar()
   const [isEditing, setIsEditing] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isAdding, setIsAdding] = useState(false)
@@ -123,9 +121,6 @@ export function DashboardTable() {
     dashboardController.create({
       user: newUser,
       onSuccess(user) {
-        enqueueSnackbar('USER succesfully created.', {
-          variant: 'success',
-        })
         setHomeUsers((oldUsers) => [user, ...oldUsers])
         setIsAdding(false)
         setNewUser({
@@ -137,9 +132,7 @@ export function DashboardTable() {
         })
       },
       onError() {
-        enqueueSnackbar('Failed to create USER.', {
-          variant: 'error',
-        })
+        alert('Error adding new user')
       },
     })
   }
@@ -151,9 +144,7 @@ export function DashboardTable() {
         userToUpdate: editData,
         updateUserOnScreen: () => {
           setIsEditing(false)
-          enqueueSnackbar('USER succesfully updated.', {
-            variant: 'success',
-          })
+
           setEditData({
             email: '',
             fullName: '',
@@ -161,9 +152,7 @@ export function DashboardTable() {
           })
         },
         onError: () => {
-          enqueueSnackbar('Failed to create USER.', {
-            variant: 'error',
-          })
+          alert('Error editing user')
         },
       })
     } catch (error) {
@@ -177,12 +166,9 @@ export function DashboardTable() {
       onSuccess() {
         fetchUsers(page)
         setIsDeleting(false)
-        enqueueSnackbar('USER succesfully deleted.', {
-          variant: 'success',
-        })
       },
       onError() {
-        console.error('Failed to delete user')
+        alert('Error deleting user')
       },
     })
   }

@@ -7,11 +7,8 @@ interface AuthRedirectProps {
 }
 
 const AuthRedirect: React.FC<AuthRedirectProps> = ({ children }) => {
-  // Obtendo o token dos cookies
   const token = nookies.get()
   console.log(token)
-
-  // Configurando o header da API com o token
   if (!token) {
     redirect('/login')
   }
