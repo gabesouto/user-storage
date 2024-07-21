@@ -94,14 +94,16 @@ export class UserService {
     const endIndex = startIndex + limit
 
     if (filter) {
+      // Aplicando o filtro
       const [field, value] = filter.split(':')
-
       const parsedValue = isNaN(Number(value)) ? value : Number(value)
 
+      // Busca com filtro e ordenação
       const usersByFilter = await this.prisma.user.findMany({
         where: {
           [field]: parsedValue,
         },
+        orderBy: { createdAt: 'desc' }, // Adiciona a ordenação aqui
       })
 
       if (!usersByFilter || usersByFilter.length === 0) {
@@ -115,7 +117,7 @@ export class UserService {
       const total = usersByFilter.length
       const totalPages = Math.ceil(total / limit)
 
-      // Paginate the filtered results
+      // Pagina os resultados filtrados
       const paginatedUsers = usersWithoutPasswords.slice(startIndex, endIndex)
 
       return {
@@ -125,17 +127,19 @@ export class UserService {
       }
     }
 
-    // If no filter is applied
+    // Se não houver filtro, busca todos os usuários com ordenação e paginação
     const users = await this.prisma.user.findMany({
       skip: startIndex,
       take: limit,
+      orderBy: { createdAt: 'desc' },
     })
 
     if (users.length === 0) {
       throw new NotFoundException('No users found for the given page and limit')
     }
 
-    const total = await this.prisma.user.count() // Get the total number of users
+    // Obtém o total de usuários
+    const total = await this.prisma.user.count()
     const usersWithoutPasswords = users.map((user) =>
       this.excludeService.exclude(user, ['password']),
     )

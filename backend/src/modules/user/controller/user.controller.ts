@@ -91,7 +91,7 @@ export class UserController {
     status: 401,
     description: 'Unauthorized access',
   })
-  // @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard)
   async findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(5), ParseIntPipe) limit: number,
