@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { loginController } from '../controller/login.controller'
 import { api } from '../repository/login.repository'
 import { useRouter } from 'next/navigation'
+import { setCookie } from 'nookies'
 
 export default function LoginForm() {
   const { push } = useRouter()
@@ -35,6 +36,8 @@ export default function LoginForm() {
               setToken(accessToken)
               saveTokenToLocalStorage(accessToken)
               push('/dashboard')
+
+              setCookie(undefined, 'token', accessToken)
             },
           }
           loginController.post(payload).then(() => {

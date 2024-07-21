@@ -5,6 +5,9 @@ import React, { useEffect, useRef, useState } from 'react'
 import EditUserForm from './editing-user.form'
 import AddUserForm from './adding-user.form'
 import DeleteUserConfirmation from './user-delete.modal'
+import { jwtDecode, JwtPayload } from 'jwt-decode'
+import nookies from 'nookies'
+import { useRouter } from 'next/navigation'
 
 export interface HomeUser {
   id: string
@@ -16,6 +19,10 @@ export interface HomeUser {
 }
 
 type HomeUsers = HomeUser[]
+
+interface CustomJwtPayload extends JwtPayload {
+  role?: string
+}
 
 export function DashboardTable() {
   const [isEditing, setIsEditing] = useState(false)
@@ -42,8 +49,49 @@ export function DashboardTable() {
   const [updateUserId, setUpdateUserId] = useState('')
   const [deleteUserId, setDeleteUserId] = useState('')
   const initialLoadComplete = useRef(false)
+  const [userRole, setUserRole] = useState<string | null>(null) // Adiciona estado para a role do usuário
+  const [authLoading, setAuthLoading] = useState(true) // Adiciona
+
+  const { push } = useRouter()
+
+  useEffect(() => {
+    const cookies = nookies.get()
+    const token = cookies.token
+
+    if (!token) {
+      push('/login')
+    } else {
+      // Verifica a role do usuário se o token estiver presente
+      const decoded: CustomJwtPayload = jwtDecode(token)
+      setUserRole(decoded.role as string)
+      setAuthLoading(false) // Finaliza o carregamento de autenticação
+    }
+  }, [push])
+
+  useEffect(() => {
+    const token = localStorage.getItem('token') // Supondo que o token está armazenado no localStorage
+    if (token) {
+      const decoded: CustomJwtPayload = jwtDecode(token)
+      setUserRole(decoded.role as string)
+    }
+  }, [])
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setEditData((prevData) => ({ ...prevData, [name]: value }))
+  }
+
+  const handleNewUserChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setNewUser((prevData) => ({ ...prevData, [name]: value }))
+  }
 
   const handleEditClick = (id: string) => {
+    if (userRole !== 'admin') {
+      alert('Apenas administradores podem editar usuários.')
+      return
+    }
+
     const user = homeUsers.find((user) => user.id === id)
     if (user) {
       setEditData({
@@ -57,21 +105,19 @@ export function DashboardTable() {
   }
 
   const handleDeleteClick = (userId: string) => {
+    if (userRole !== 'admin') {
+      alert('Apenas administradores podem apagar usuários.')
+      return
+    }
     setDeleteUserId(userId)
     setIsDeleting(true)
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setEditData((prevData) => ({ ...prevData, [name]: value }))
-  }
-
-  const handleNewUserChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setNewUser((prevData) => ({ ...prevData, [name]: value }))
-  }
-
   const handleAddUser = () => {
+    if (userRole !== 'admin') {
+      alert('Apenas administradores podem adicionar novos usuários.')
+      return
+    }
     dashboardController.create({
       user: newUser,
       onSuccess(user) {
@@ -91,26 +137,9 @@ export function DashboardTable() {
     })
   }
 
-  const handleDeleteUser = (userId: string) => {
-    dashboardController.deleteUser({
-      userId,
-      onSuccess() {
-        fetchUsers(page)
-        setIsDeleting(false)
-      },
-      onError() {
-        console.error('Failed to delete user')
-      },
-    })
-  }
-
-  const handleCancelDeleteUser = () => {
-    setIsDeleting(false)
-  }
-
   const handleEditUser = async (id: string) => {
     try {
-      await dashboardController.update({
+      dashboardController.update({
         id,
         userToUpdate: editData,
         updateUserOnScreen: () => {
@@ -130,17 +159,36 @@ export function DashboardTable() {
     }
   }
 
-  useEffect(() => {
-    if (!initialLoadComplete.current) {
-      fetchUsers(1)
-    }
-  }, [])
+  const handleDeleteUser = (userId: string) => {
+    dashboardController.deleteUser({
+      userId,
+      onSuccess() {
+        fetchUsers(page)
+        setIsDeleting(false)
+      },
+      onError() {
+        console.error('Failed to delete user')
+      },
+    })
+  }
+
+  const handleCancelDeleteUser = () => {
+    setIsDeleting(false)
+  }
 
   useEffect(() => {
-    if (initialLoadComplete.current) {
+    if (!authLoading) {
+      if (!initialLoadComplete.current) {
+        fetchUsers(1)
+      }
+    }
+  }, [authLoading])
+
+  useEffect(() => {
+    if (!authLoading && initialLoadComplete.current) {
       fetchUsers(page)
     }
-  }, [page])
+  }, [page, authLoading])
 
   const fetchUsers = async (pageNumber: number) => {
     setLoading(true)
@@ -165,11 +213,10 @@ export function DashboardTable() {
 
   const hasMorePages = totalPages > page
   const hasNoUsers = homeUsers.length === 0 && !loading
-
   return (
     <section className="container px-4 mx-auto">
       {/* Search Bar */}
-      <div className="mb-4  mt-5 flex items-center gap-x-4">
+      <div className="mb-4 mt-5 flex items-center gap-x-4">
         <input
           type="text"
           placeholder={`Search by ${searchBy === 'name' ? 'name' : 'email'}`}
@@ -244,20 +291,24 @@ export function DashboardTable() {
                         {new Date(user.updatedAt).toLocaleDateString()}
                       </td>
                       <td className="relative px-4 py-4 text-right text-sm font-medium whitespace-nowrap">
-                        <button
-                          onClick={() => handleEditClick(user.id)}
-                          className="text-purpleGuru hover:text-indigo-900"
-                        >
-                          Edit
-                        </button>
+                        {userRole === 'admin' && (
+                          <button
+                            onClick={() => handleEditClick(user.id)}
+                            className="text-purpleGuru hover:text-indigo-900"
+                          >
+                            Edit
+                          </button>
+                        )}
                       </td>
                       <td className="relative px-4 py-4 text-right text-sm font-medium whitespace-nowrap">
-                        <button
-                          onClick={() => handleDeleteClick(user.id)}
-                          className="text-red-500 hover:text-red-600 hover:font-bold"
-                        >
-                          Delete
-                        </button>
+                        {userRole === 'admin' && (
+                          <button
+                            onClick={() => handleDeleteClick(user.id)}
+                            className="text-red-500 hover:text-red-600 hover:font-bold"
+                          >
+                            Delete
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -318,13 +369,16 @@ export function DashboardTable() {
             </span>
           </button>
         )}
-        <button
-          onClick={() => setIsAdding(true)}
-          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-        >
-          Add User
-        </button>
+        {userRole === 'admin' && (
+          <button
+            onClick={() => setIsAdding(true)}
+            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+          >
+            Add User
+          </button>
+        )}
       </div>
+
       {/* Edit Form */}
       {isEditing && (
         <EditUserForm
@@ -353,9 +407,6 @@ export function DashboardTable() {
           onCancel={handleCancelDeleteUser}
         />
       )}
-
-      {/* Pagination Controls */}
-      <div className="flex justify-between "></div>
     </section>
   )
 }

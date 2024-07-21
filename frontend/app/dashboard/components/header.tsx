@@ -1,12 +1,14 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { destroyCookie } from 'nookies'
 
 export default function Header() {
   const { push } = useRouter()
 
   const logout = () => {
     localStorage.clear()
+    destroyCookie(undefined, 'token')
     push('/login')
   }
 
