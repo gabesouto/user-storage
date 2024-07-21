@@ -9,7 +9,7 @@ export default function Header() {
   const logout = () => {
     localStorage.clear()
     destroyCookie(undefined, 'token')
-    push('/login')
+    push('/')
   }
 
   return (

@@ -59,7 +59,7 @@ export function DashboardTable() {
     const token = cookies.token
 
     if (!token) {
-      push('/login')
+      push('/')
     } else {
       // Verifica a role do usuário se o token estiver presente
       const decoded: CustomJwtPayload = jwtDecode(token)

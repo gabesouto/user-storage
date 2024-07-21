@@ -1,14 +1,10 @@
-import axios from 'axios'
 import {
   UserParams,
   UserSchemaResponse,
   UserUpdateParams,
 } from '../schema/user.schema'
 import { z as schema } from 'zod'
-
-export const api = axios.create({
-  baseURL: 'http://localhost:3001',
-})
+import { api } from './api'
 
 api.interceptors.request.use(
   (config) => {

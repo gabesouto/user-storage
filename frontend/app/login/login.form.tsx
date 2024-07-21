@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { loginController } from '../controller/login.controller'
-import { api } from '../repository/login.repository'
+import { api } from '../repository/api'
 import { useRouter } from 'next/navigation'
 import { setCookie } from 'nookies'
 
@@ -111,6 +111,7 @@ export default function LoginForm() {
             New member?
             <button
               type="button"
+              onClick={() => push('/signup')}
               className="mt-2 ml-1 font-semibold text-gray-600 hover:underline focus:text-gray-800 focus:outline-none"
             >
               Sign up

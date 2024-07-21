@@ -78,8 +78,8 @@ export class UserController {
     name: 'filter',
     type: String,
     required: false,
-    description: 'Search users with a common property (e.g., "role:admin")',
-    example: 'role:admin',
+    description: 'Search users with a common property (e.g., "age:26")',
+    example: 'age:26',
   })
   @ApiSecurity('bearer')
   @ApiResponse({
@@ -105,7 +105,7 @@ export class UserController {
     name: 'id',
     type: String,
     description: 'Unique identifier of the user',
-    example: '550e8400-e29b-41d4-a716-446655440000',
+    example: 'b1d5f6a0-4736-4b8f-8d3c-b4a4d5e77bde',
   })
   @ApiResponse({
     status: 200,
@@ -127,7 +127,7 @@ export class UserController {
     name: 'id',
     type: String,
     description: 'Unique identifier of the user to be updated',
-    example: '550e8400-e29b-41d4-a716-446655440000',
+    example: 'b1d5f6a0-4736-4b8f-8d3c-b4a4d5e77bde',
   })
   @ApiBody({
     description: 'User details to be updated',
@@ -160,7 +160,7 @@ export class UserController {
     name: 'id',
     type: String,
     description: 'Unique identifier of the user to be deleted',
-    example: '550e8400-e29b-41d4-a716-446655440000',
+    example: 'b1d5f6a0-4736-4b8f-8d3c-b4a4d5e77bde',
   })
   @ApiResponse({
     status: 204,

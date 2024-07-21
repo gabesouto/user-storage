@@ -10,7 +10,7 @@ const AuthRedirect: React.FC<AuthRedirectProps> = ({ children }) => {
   const token = nookies.get()
   console.log(token)
   if (!token) {
-    redirect('/login')
+    redirect('/')
   }
 
   return <>{children}</>

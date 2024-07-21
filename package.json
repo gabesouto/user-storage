@@ -1,0 +1,13 @@
+{
+  "name": "user-storage",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+       
+    "install:apps": "cd backend && npm install && cd .. && cd frontend && npm install"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

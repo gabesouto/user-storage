@@ -12,7 +12,6 @@ async function bootstrap() {
     .setTitle('User Storage')
     .setDescription('User storage system by Meu Guru')
     .setVersion('1.0')
-    .addServer('http://localhost:3000/', 'Local environment')
     .addTag('Staff')
     .addTag('Auth')
     .addTag('Users')
