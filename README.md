@@ -1,9 +1,13 @@
 # User Storage
 
+![User Storage](https://github.com/gabesouto/user-storage/blob/main/Screenshot%20from%202024-07-21%2020-47-20.png)
+
+
 ## Sumário
 - [Descrição](#descrição)
+- [Decisões Técnicas](#decisões-técnicas)
 - [Metodologias Empregadas](#metodologias-empregadas)
-- [Tecnologias e Decisões Técnicas](#tecnologias-e-decisões-técnicas)
+- [Tecnologias e Decisões Técnicas](#tecnologias)
 - [API](#api)
 - [Autenticação](#autenticação)
 - [Rodando Localmente o Projeto](#rodando-localmente-o-projeto)
@@ -12,15 +16,35 @@
 
 Aplicação full-stack com sistema de gerenciamento de usuários e interface gráfica para manipulação de dados
 
+## Decisões Técnicas
+- Escolhi o NestJS para o backend ainda que eu não tivesse experiência prévia com esse framework, acredito muito na minha capacidade de aprender sob pressão e entendi que essa era uma oportunidade boa oportunidade para demonstrar isso.
+
+- Com um melhor entendimento do que série o User Storage para mim, identifiquei que fazia sentido ele ser um sistema de gerenciamento de usuários  Meu Guru, logo apenas membros da staff poderiam acessar as informações de um usuário, então uma segunda tabela chamada 'staff' foi criada, entendendo também que nem toda staff deveria ter poder absoluto dividi os membros entre 'member' e 'admin', apenas administradores podem de fato alterar dados dos usuários.
+
 ## Metodologias Empregadas
 
 - **TDD (Test-Driven Development)**: Todo o backend foi desenvolvido seguindo os princípios de TDD. Testes foram escritos antes da implementação das funcionalidades, garantindo que o código atende aos requisitos e é testável desde o início.
 
 - **Git Workflow**: Todo o desenvolvimento da aplicação seguiu os princípios e práticas do Git Workflow. A cronologia do projeto está documentada nas <strong>Issues</strong> e nos <strong>Pull Requests</strong> já finalizados, o que facilita o rastreamento das mudanças e a colaboração.
 
-## Tecnologias e Decisões Técnicas
+- **Estruturação de pastas**: Estruturei em modúlos o backend seguindo os padrões do nest.js que se encontrava na documentação oficial.
 
-- **NestJS**: Escolhi o NestJS para o backend ainda que eu não tivesse experiência prévia com esse framework, acredito muito na minha capacidade de aprender sob pressão e entendi que essa era uma oportunidade boa de aprendizado.
+## Tecnologias 
+
+- **NestJS**: Escolhi o NestJS para o backend ainda que eu não tivesse experiência prévia com esse framework. Acredito muito na minha capacidade de aprender sob pressão e entendi que essa era uma boa oportunidade de aprendizado.
+
+- **Winston**: Utilizado para logging, seguindo a recomendação do teste. Winston é uma biblioteca versátil para registrar informações em diferentes formatos e destinos.
+
+- **Swagger**: Utilizado para documentar e testar a API. A documentação pode ser acessada em [localhost:3001/api](http://localhost:3001/api).
+
+- **PostgreSQL**: Banco de dados relacional utilizado para o armazenamento dos dados dos usuários, garantindo integridade e performance nas operações de CRUD.
+
+- **bcrypt**: Utilizado para hashing de senhas, proporcionando uma camada adicional de segurança.
+
+- **JWT (JSON Web Token)**: Utilizado para autenticação e autorização de usuários, garantindo que apenas usuários autenticados e com as permissões apropriadas possam acessar determinadas rotas e funcionalidades.
+
+- **Prisma**: ORM utilizado para interagir com o banco de dados PostgreSQL, facilitando a manipulação de dados com uma abordagem baseada em schema.
+
 
 
 
