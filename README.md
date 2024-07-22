@@ -9,7 +9,7 @@
 - [Metodologias Empregadas](#metodologias-empregadas)
 - [Tecnologias e Decisões Técnicas](#tecnologias)
 - [API](#api)
-- [Autenticação](#autenticação)
+- [Autenticação](#autenticação-e-uso-da-api)
 - [Rodando Localmente o Projeto](#rodando-localmente-o-projeto)
 
 ## Descrição
@@ -54,7 +54,7 @@ A API foi documentada com Swagger para facilitar a exploração e o teste dos en
 
 
 
-## Autenticação
+## Autenticação e Uso da API
 
 As rotas de interação com o endpoint `/users` exigem autenticação JWT (JSON Web Token). Para acessar essas rotas, o usuário deve incluir um token JWT válido no cabeçalho da solicitação. 
 
@@ -63,6 +63,10 @@ Além disso, algumas rotas são restritas e só podem ser acessadas por usuário
 Para obter um token JWT, o usuário deve passar pelas rotas de autenticação fornecidas pela API, como a rota de login. O token JWT deve ser incluído no cabeçalho `Authorization` das solicitações, utilizando o formato `Bearer <token>`.
 
 Ao rodar a aplicação e acessar o endpoint [localhost:3001/api](http://localhost:3001/api) será possível mais facilmente entender esse fluxo.
+
+Também há no arquivo backend/prisma/seeders.ts um script com membros 'admin', selecione um dos email e senhas de lá e faça o login para utilizar de todos recursos da aplicaçã0, ou utilize o exemplo provido no Swagger.
+
+Não é possível se cadastrar como um 'admin'.
 
 ## Rodando localmente o projeto
 
